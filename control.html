@@ -2,11 +2,6 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/static/tailwind.config.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/static/global.css">
     <title>Control Page</title>
     <script>
         const socket = new WebSocket("ws://localhost:8000/ws?client_type=control");
@@ -69,7 +64,7 @@
     </script>
 </head>
 
-<body class="font-Poppins font-normal bg-slate-700">
+<body class="font-Poppins font-normal bg-slate-700 ">
     <div class="w-full m-4 p-4 bg-slate-400 rounded-3xl text-lg">
         <h1 class="w-full text-center font-Poppins font-bold text-3xl mb-4">Control Page</h1>
         <form onsubmit="event.preventDefault(); sendData();">

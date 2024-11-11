@@ -47,3 +47,4 @@ package-lock.json
 .coverage
 htmlcov/
 .pytest_cache/ 
+static/global_rendered.css

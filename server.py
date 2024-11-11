@@ -9,7 +9,6 @@ app = FastAPI()
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 # Default state
 DEFAULT_STATE = {
     "time": {
@@ -63,6 +62,8 @@ class ConnectionManager:
                 self.overlay_clients.remove(client)
 
 manager = ConnectionManager()
+
+
 
 # Helper function to read HTML content
 def read_html(filename: str) -> str:
