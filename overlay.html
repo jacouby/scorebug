@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <title>Overlay</title>
+    <script>
+        const socket = new WebSocket("ws://localhost:8000/ws?client_type=overlay");
+
+        socket.onopen = function (event) {
+            console.log("WebSocket is open now.");
+        };
+
+        socket.onmessage = function (event) {
+            try {
+                const data = JSON.parse(event.data);
+                updatePage(data);
+            } catch (e) {
+                console.error("Error parsing JSON:", e);
+            }
+        };
+
+        socket.onclose = function (event) {
+            console.log("WebSocket is closed now.");
+        };
+
+        function updatePage(data) {
+            if (data.time.activated) {
+                document.querySelector('.gameTime').textContent = data.time.gameTime;
+            } else {
+                document.querySelector('.gameTime').textContent = '@';
+            }
+            if (data.home) {
+                document.querySelector('.nameHome').textContent = data.home.name;
+                document.querySelector('.scoreHome').textContent = data.home.score;
+                const homeTeam = document.querySelector('.homeTeam');
+                // Remove existing bg-[*] class
+                homeTeam.className = homeTeam.className.replace(/bg-\[#[0-9a-fA-F]{6}\]/g, '');
+                // Add new bg-[*] class
+                homeTeam.classList.add(`bg-[${data.home.color}]`);
+            }
+            if (data.away) {
+                document.querySelector('.nameAway').textContent = data.away.name;
+                document.querySelector('.scoreAway').textContent = data.away.score;
+                const awayTeam = document.querySelector('.awayTeam');
+                // Remove existing bg-[*] class
+                awayTeam.className = awayTeam.className.replace(/bg-\[#[0-9a-fA-F]{6}\]/g, '');
+                // Add new bg-[*] class
+                awayTeam.classList.add(`bg-[${data.away.color}]`);
+            }
+        }
+
+
+    </script>
+    <link rel="stylesheet" href="./global.css">
+</head>
+
+<body class="font-Poppins font-semibold text-white">
+    <div class="w-min-96 h-min-10 m-2.5 p-3 bg-black rounded-full flex">
+        <div class="awayTeam w-5/12 min-h-10 p-1 bg-[#ff0000] rounded-full flex">
+            <span class="nameAway w-2/3 ml-3 text-white text-4xl">
+                Away Team
+            </span>
+            <span class="scoreAway w-1/3 h-10 mr-3 text-white text-right text-4xl">
+                0
+            </span>
+        </div>
+        <div class="gameTime w-2/12 min-h-10 m-auto text-center text-4xl">
+            00:00
+        </div>
+        <div class="homeTeam w-5/12 min-h-10 p-1 bg-[#1303c8] rounded-full flex">
+            <span class="scoreHome w-1/3 h-10 ml-3 text-white text-left text-4xl">
+                0
+            </span>
+            <span class="nameHome w-2/3 mr-3 text-white text-right text-4xl">
+                Home Team
+            </span>
+        </div>
+    </div>
+</body>
+
+</html>
