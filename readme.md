@@ -51,9 +51,9 @@ fastapi run
 
 ## TODO
 
-Quarter/In place of time
-Make specific  box with score
-Current Down
-Timeout
-Flag
-Replace entire overlay with given text in specific color/text
+- Quarter/In place of time
+- Make specific  box with score
+- Current Down
+- Timeout
+- Flag
+- Replace entire overlay with given text in specific color/text
