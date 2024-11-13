@@ -41,32 +41,19 @@ fastapi dev
 ```
 The server will be available at `http://localhost:8000`
 
-### Running Tailwind CSS in Watch Mode
-In a separate terminal:
-```bash
-npx tailwindcss -i ./static/global.css -o ./static/output.css --watch
-```
-
 This will:
 - Watch for changes in your HTML and CSS files
-- Automatically rebuild the CSS when changes are detected
-- Hot-reload styles in the browser
-
-## Production Mode
-
-### Building CSS for Production
-```bash
-npx tailwindcss -i ./static/global.css -o ./static/output.css --minify
-```
 
 ### Running in Production
 ```bash
 fastapi run
 ```
 
-## Important Notes
+## TODO
 
-1. In development, always run both the FastAPI server and Tailwind CSS watcher
-2. For production, build the CSS file before deploying
-3. Make sure the `static` directory is properly served by FastAPI
-4. The Poppins font family is included in the project and served locally
+Quarter/In place of time
+Make specific  box with score
+Current Down
+Timeout
+Flag
+Replace entire overlay with given text in specific color/text
