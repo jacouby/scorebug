@@ -1,0 +1,101 @@
+.control-body {
+    font-family: 'Poppins', sans-serif;
+    font-weight: normal;
+    background-color: #374151; /* bg-slate-700 */
+}
+
+.control-container {
+    width: 100%;
+    margin: 1rem;
+    padding: 1rem;
+    background-color: #cbd5e1; /* bg-slate-400 */
+    border-radius: 1.5rem;
+    font-size: 1.125rem; /* text-lg */
+}
+
+.control-title {
+    width: 100%;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    font-size: 1.875rem; /* text-3xl */
+    margin-bottom: 1rem;
+}
+
+.control-section {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #ffffff; /* bg-white */
+    border-radius: 0.75rem;
+}
+
+.control-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    gap: 0.5rem;
+}
+
+.control-input {
+    padding: 0.5rem;
+    background-color: #e2e8f0; /* bg-slate-200 */
+    border-radius: 0.375rem;
+}
+
+.color-input {
+    margin-left: 0.5rem;
+}
+
+.control-teams {
+    display: flex;
+    width: 100%;
+    margin-top: 1rem;
+    gap: 1rem;
+}
+
+.team-border {
+    width: 100%;
+    padding: 1rem;
+    background-color: #ffffff; /* bg-white */
+    border-radius: 0.75rem;
+}
+
+.team-title {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600; /* font-semibold */
+}
+
+.control-buttons {
+    display: flex;
+    width: 100%;
+    margin-top: 1.5rem;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.send-button, .reset-button {
+    width: 6rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s;
+}
+
+.send-button {
+    background-color: #38bdf8; /* bg-sky-400 */
+}
+
+.send-button:hover {
+    background-color: #0ea5e9; /* bg-sky-500 */
+}
+
+.reset-button {
+    background-color: #f87171; /* bg-red-400 */
+}
+
+.reset-button:hover {
+    background-color: #ef4444; /* bg-red-500 */
+} 
