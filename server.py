@@ -1,7 +1,6 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
-import os
 import json
 from typing import Dict, List
 
@@ -70,23 +69,16 @@ def read_html(filename: str) -> str:
     with open(filename, "r") as file:
         return file.read()
 
-# Helper function to inject head content
-def inject_head(html_content: str) -> str:
-    head_content = read_html("head.html")
-    return html_content.replace("</head>", f"{head_content}</head>")
-
 # Serve the overlay.html file
 @app.get("/overlay")
 async def get_overlay():
     html_content = read_html("overlay.html")
-    html_content = inject_head(html_content)
     return HTMLResponse(content=html_content, media_type="text/html")
 
 # Serve the control.html file
 @app.get("/control")
 async def get_control():
     html_content = read_html("control.html")
-    html_content = inject_head(html_content)
     return HTMLResponse(content=html_content, media_type="text/html")
 
 # WebSocket endpoint
