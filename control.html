@@ -10,6 +10,12 @@
     <script>
         const socket = new WebSocket("ws://localhost:8000/ws?client_type=control");
 
+        socket.onclose = (event) => {
+            console.log('WebSocket closed:', event);
+            console.log(`Code ${event.code}. Reconnecting...`);
+            setTimeout(openWebSocket, 5000);
+        }
+
         socket.onopen = function (event) {
             console.log("WebSocket is open now.");
         };

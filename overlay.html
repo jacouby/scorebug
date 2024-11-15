@@ -10,6 +10,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
         const socket = new WebSocket("ws://localhost:8000/ws?client_type=overlay");
+        
+        socket.onclose = (event) => {
+            console.log('WebSocket closed:', event);
+
+            // If the connection was closed due to an error, attempt to reconnect
+            if (event.code !== 1000) { // Code 1000 means normal closure
+                console.log(`WebSocket closed with error code ${event.code}. Reconnecting...`);
+                setTimeout(openWebSocket, 5000);
+        }}
 
         socket.onopen = function (event) {
             console.log("WebSocket is open now.");

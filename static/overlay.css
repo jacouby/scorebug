@@ -90,4 +90,13 @@
 
 .bannerText {
     margin: 0rem 1rem;
+    text-align: center;
+}
+
+.bannerIn {
+    animation: slideIn 3s timing-function delay iteration-count direction fill-mode;
+}
+
+.bannerOut {
+
 }
