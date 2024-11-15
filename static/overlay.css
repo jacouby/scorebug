@@ -83,9 +83,14 @@
 }
 
 .bannerContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     border-radius: 9999px;
     background-color: #1303c8;
+    z-index: 10; /* Ensure it appears above other content */
+    display: none; /* Hidden by default */
 }
 
 .bannerText {
@@ -93,10 +98,28 @@
     text-align: center;
 }
 
-.bannerIn {
-    animation: slideIn 3s timing-function delay iteration-count direction fill-mode;
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(100);
+    }
 }
 
-.bannerOut {
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
 
+.slide-in {
+    animation: slideIn 1s forwards;
+}
+
+.slide-out {
+    animation: slideIn 1s backwards;
 }

@@ -61,16 +61,33 @@
             }
         }
 
+        function showBanner(data) {
+            const banner = document.getElementById('banner');
+            const bannerText = document.getElementById('bannerText');
+            bannerText.textContent = data.text;
+            banner.style.backgroundColor = data.bgColor;
+            bannerText.style.color = data.textColor;
+            banner.style.display = 'block';
+            banner.classList.add('slide-in');
+            setTimeout(() => {
+                banner.classList.remove('slide-in');
+                banner.classList.add('slide-out');
+                setTimeout(() => {
+                    banner.style.display = 'none';
+                }, 1000)
+            }, 1000); // Adjust the duration as needed
+        }
+
     </script>
 </head>
 
 <body class="overlay-body">
+    <div class="bannerContainer" id="banner" style="display: none;">
+        <span id="bannerText" class="bannerText">
+            test text
+        </span>
+    </div>
     <div class="overlay-container">
-        <div class="bannerContainer" id="banner" style="display: none;">
-            <span id="bannerText" class="bannerText">
-                test text
-            </span>
-        </div>
         <div class="scoreContainer">
             <div class="awayTeam">
                 <span class="nameAway">Away Team</span>
