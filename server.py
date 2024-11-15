@@ -7,7 +7,7 @@ from typing import Dict, List
 app = FastAPI()
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static", ), name="static", )
 # Default state
 DEFAULT_STATE = {
     "time": {
@@ -92,15 +92,15 @@ async def websocket_endpoint(
         while True:
             data = await websocket.receive_text()
             try:
-                # Parse the incoming JSON data
                 message = json.loads(data)
-                # Check if it's a reset command
                 if message.get("command") == "reset":
                     global current_state
                     current_state = DEFAULT_STATE.copy()
                     if client_type == "control":
                         await manager.broadcast_to_overlays(json.dumps(current_state))
-                # Otherwise process as normal update
+                elif message.get("command") == "banner":
+                    if client_type == "control":
+                        await manager.broadcast_to_overlays(json.dumps(message))
                 elif all(key in message for key in ["time", "home", "away"]):
                     if client_type == "control":
                         # Update current state

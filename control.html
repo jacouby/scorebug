@@ -65,6 +65,21 @@
         function resetData() {
             socket.send(JSON.stringify({ command: "reset" }));
         }
+
+        function sendBannerData() {
+            const bannerData = {
+                command: "banner",
+                text: document.getElementById('bannerText').value,
+                bgColor: document.getElementById('bannerBgColor').value,
+                textColor: document.getElementById('bannerTextColor').value
+            };
+            socket.send(JSON.stringify(bannerData));
+        }
+
+        function setBannerBgColor(team) {
+            const color = team === 'home' ? document.getElementById('homeColor').value : document.getElementById('awayColor').value;
+            document.getElementById('bannerBgColor').value = color;
+        }
     </script>
 </head>
 
@@ -123,6 +138,27 @@
                 <button class="reset-button" type="button" onclick="resetData()">Reset</button>
             </div>
         </form>
+
+        <div class="banner-section">
+            <h2>Banner Settings</h2>
+            <form onsubmit="event.preventDefault(); sendBannerData();">
+                <div class="control-item">
+                    <label for="bannerText">Banner Text:</label>
+                    <input type="text" id="bannerText" class="control-input">
+                </div>
+                <div class="control-item">
+                    <label for="bannerBgColor">Background Color:</label>
+                    <input type="color" id="bannerBgColor" value="#000000" class="color-input">
+                    <button type="button" onclick="setBannerBgColor('home')">Home Color</button>
+                    <button type="button" onclick="setBannerBgColor('away')">Away Color</button>
+                </div>
+                <div class="control-item">
+                    <label for="bannerTextColor">Text Color:</label>
+                    <input type="color" id="bannerTextColor" value="#ffffff" class="color-input">
+                </div>
+                <button type="submit" class="send-button">Send Banner</button>
+            </form>
+        </div>
     </div>
 </body>
 

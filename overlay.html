@@ -18,7 +18,11 @@
         socket.onmessage = function (event) {
             try {
                 const data = JSON.parse(event.data);
-                updatePage(data);
+                if (data.command === "banner") {
+                    showBanner(data);
+                } else {
+                    updatePage(data);
+                }
             } catch (e) {
                 console.error("Error parsing JSON:", e);
             }
@@ -47,19 +51,27 @@
                 awayTeam.style.backgroundColor = data.away.color;
             }
         }
+
     </script>
 </head>
 
 <body class="overlay-body">
     <div class="overlay-container">
-        <div class="awayTeam">
-            <span class="nameAway">Away Team</span>
-            <span class="scoreAway">0</span>
+        <div class="bannerContainer" id="banner" style="display: none;">
+            <span id="bannerText" class="bannerText">
+                test text
+            </span>
         </div>
-        <div class="gameTime">00:00</div>
-        <div class="homeTeam">
-            <span class="scoreHome">0</span>
-            <span class="nameHome">Home Team</span>
+        <div class="scoreContainer">
+            <div class="awayTeam">
+                <span class="nameAway">Away Team</span>
+                <span class="scoreAway">0</span>
+            </div>
+            <div class="gameTime">00:00</div>
+            <div class="homeTeam">
+                <span class="scoreHome">0</span>
+                <span class="nameHome">Home Team</span>
+            </div>
         </div>
     </div>
 </body>

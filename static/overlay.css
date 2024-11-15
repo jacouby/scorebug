@@ -1,11 +1,14 @@
 .overlay-body {
     width: 100vw;
+    height: 100vh; /* Ensure full viewport height */
     font-family: 'Poppins', sans-serif;
     font-weight: 600; /* font-semibold */
     color: #ffffff; /* text-white */
+    overflow: hidden; /* Prevent scrollbars during animation */
 }
 
 .overlay-container {
+    position: relative; /* Position relative for absolute banner */
     min-width: 24rem; /* w-min-96 */
     min-height: 2.5rem; /* h-min-10 */
     max-height: 5rem;
@@ -14,6 +17,7 @@
     background-color: #000000; /* bg-black */
     border-radius: 9999px; /* rounded-full */
     display: flex;
+    font-size: 2.25rem; /* text-4xl */
 }
 
 .awayTeam, .homeTeam {
@@ -35,7 +39,6 @@
 .nameAway, .nameHome {
     width: 75%; /* w-3/4 */
     color: #ffffff; /* text-white */
-    font-size: 2.25rem; /* text-4xl */
     text-overflow: clip;
 }
 
@@ -54,7 +57,6 @@
     height: 2.5rem; /* h-10 */
     color: #ffffff; /* text-white */
     text-align: center;
-    font-size: 2.25rem; /* text-4xl */
 }
 
 .scoreAway {
@@ -73,4 +75,19 @@
     margin: auto;
     text-align: center;
     font-size: 2.25rem; /* text-4xl */
-} 
+}
+
+.scoreContainer {
+    display: flex;
+    width: 100%;
+}
+
+.bannerContainer {
+    width: 100%;
+    border-radius: 9999px;
+    background-color: #1303c8;
+}
+
+.bannerText {
+    margin: 0rem 1rem;
+}
