@@ -84,9 +84,12 @@
 
 .bannerContainer {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    top: 0.625rem;
+    left: 0.625rem;
+    right: 0.625rem;
+    min-height: 2.5rem;
+    max-height: 5rem;
+    padding: 0.75rem;
     border-radius: 9999px;
     background-color: #1303c8;
     z-index: 10; /* Ensure it appears above other content */
@@ -96,15 +99,7 @@
 .bannerText {
     margin: 0rem 1rem;
     text-align: center;
-}
-
-@keyframes slideOut {
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(100);
-    }
+    font-size: 2.25rem;
 }
 
 @keyframes slideIn {
@@ -117,9 +112,18 @@
 }
 
 .slide-in {
-    animation: slideIn 1s forwards;
+    animation: slideIn 1.5s forwards;
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(100%);
+    }
 }
 
 .slide-out {
-    animation: slideIn 1s backwards;
+    animation: slideOut 1.5s forwards;
 }
