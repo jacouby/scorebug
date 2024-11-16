@@ -68,7 +68,16 @@
             banner.style.backgroundColor = data.bgColor;
             bannerText.style.color = data.textColor;
             banner.style.display = 'block';
+
+            // Remove any existing animation classes
+            banner.classList.remove('slide-in', 'slide-out');
+
+            // Trigger reflow to restart the animation
+            void banner.offsetWidth;
+
+            // Add the slide-in class to start the animation
             banner.classList.add('slide-in');
+
             setTimeout(() => {
                 banner.classList.remove('slide-in');
                 banner.classList.add('slide-out');
