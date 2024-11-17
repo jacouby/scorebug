@@ -1,4 +1,4 @@
-name: Build and Package Windows EXE
+name: Build and Package MacOS APP
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
     - name: Build with PyInstaller
       run: |
         source venv/bin/activate
-        pyinstaller --onefile app.py
+        pyinstaller --onefile --windowed --name Scorebug app.py
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
