@@ -21,7 +21,7 @@
 }
 
 .awayTeam, .homeTeam {
-    width: 41.666667%; /* w-5/12 */
+    width: 43%; /* w-5/12 */
     min-height: 2.5rem; /* min-h-10 */
     padding: 0.25rem; /* p-1 */
     border-radius: 9999px; /* rounded-full */
@@ -70,7 +70,7 @@
 }
 
 .gameTime {
-    width: 16.666667%; /* w-2/12 */
+    width: 14%; /* w-2/12 */
     min-height: 2.5rem; /* min-h-10 */
     margin: auto;
     text-align: center;

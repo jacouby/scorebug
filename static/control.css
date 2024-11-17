@@ -1,3 +1,10 @@
+.control-body button {
+    width: fit-content;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s;
+}
+
 .control-body {
     font-family: 'Poppins', sans-serif;
     font-weight: normal;
@@ -77,13 +84,6 @@
     gap: 1rem;
 }
 
-.send-button, .reset-button {
-    width: 6rem;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.3s;
-}
-
 .send-button {
     background-color: #38bdf8; /* bg-sky-400 */
 }
@@ -99,3 +99,21 @@
 .reset-button:hover {
     background-color: #ef4444; /* bg-red-500 */
 } 
+
+.bannerControlContainer {
+    padding: 1rem;
+    margin: .675rem 0;
+    background-color: #ffffff;
+    border-radius: 1rem;
+}
+
+.bannerControlContainer h2 {
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.bannerSend {
+    width: fit-content;
+    margin: auto;
+}

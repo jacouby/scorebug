@@ -9,16 +9,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-        const socket = new WebSocket("ws://localhost:8000/ws?client_type=overlay");
-        
-        socket.onclose = (event) => {
-            console.log('WebSocket closed:', event);
+        let socket;
 
-            // If the connection was closed due to an error, attempt to reconnect
-            if (event.code !== 1000) { // Code 1000 means normal closure
+        function openWebSocket() {
+            socket = new WebSocket("ws://localhost:8000/ws?client_type=overlay");
+
+            socket.onopen = function (event) {
+                console.log("WebSocket is open now.");
+            };
+
+            socket.onmessage = function (event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    updatePage(data);
+                } catch (e) {
+                    console.error("Error parsing JSON:", e);
+                }
+            };
+
+            socket.onclose = function (event) {
+                console.log('WebSocket closed:', event);
                 console.log(`WebSocket closed with error code ${event.code}. Reconnecting...`);
                 setTimeout(openWebSocket, 5000);
-        }}
+            };
+
+            socket.onerror = function (error) {
+                console.error("WebSocket error observed:", error);
+                socket.close();
+            };
+        }
+
+        openWebSocket();
 
         socket.onopen = function (event) {
             console.log("WebSocket is open now.");
@@ -27,10 +48,14 @@
         socket.onmessage = function (event) {
             try {
                 const data = JSON.parse(event.data);
-                if (data.command === "banner") {
+                if (data.command === "banner" || data.command === "persistent_banner") {
                     showBanner(data);
                 } else {
-                    updatePage(data);
+                    if (data.command === "remove_banner") {
+                        forceRemoveBanner(data)
+                    } else {
+                        updatePage(data);
+                    }
                 }
             } catch (e) {
                 console.error("Error parsing JSON:", e);
@@ -68,23 +93,27 @@
             banner.style.backgroundColor = data.bgColor;
             bannerText.style.color = data.textColor;
             banner.style.display = 'block';
-
-            // Remove any existing animation classes
             banner.classList.remove('slide-in', 'slide-out');
-
-            // Trigger reflow to restart the animation
             void banner.offsetWidth;
-
-            // Add the slide-in class to start the animation
             banner.classList.add('slide-in');
 
-            setTimeout(() => {
-                banner.classList.remove('slide-in');
-                banner.classList.add('slide-out');
+            if (data.command !== "persistent_banner") {
                 setTimeout(() => {
-                    banner.style.display = 'none';
-                }, 1500)
-            }, 10000); // Adjust the duration as needed
+                    banner.classList.remove('slide-in');
+                    banner.classList.add('slide-out');
+                    setTimeout(() => {
+                        banner.style.display = 'none';
+                    }, 1500)
+                }, data.duration || 10000); // Use the duration from data or default to 10 seconds
+            }
+        }
+
+        function forceRemoveBanner(data) {
+            banner.classList.remove('slide-in');
+            banner.classList.add('slide-out');
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 1500)
         }
 
     </script>

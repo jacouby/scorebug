@@ -27,31 +27,20 @@ source venv/bin/activate  # On Windows, use: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Install Tailwind CSS:
-```bash
-npm install -D tailwindcss
-npx tailwindcss init
-```
-
-## Development Mode
-
-### Running the FastAPI Server
+### Development Mode
 ```bash
 fastapi dev
 ```
 The server will be available at `http://localhost:8000`
-
-This will:
-- Watch for changes in your HTML and CSS files
 
 ### Running in Production
 ```bash
 fastapi run
 ```
 
-## TODO
+## - TODO
 
 - [ ] Custom Text in middle for current quater/down
 - [ ] Timeout (Make banner stay until manual change)
 - [ ] Flag
-- [X] Replace entire overlay with given text in specific color/text
+- [x] Replace entire overlay with given text in specific color/text

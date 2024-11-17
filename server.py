@@ -98,7 +98,10 @@ async def websocket_endpoint(
                     current_state = DEFAULT_STATE.copy()
                     if client_type == "control":
                         await manager.broadcast_to_overlays(json.dumps(current_state))
-                elif message.get("command") == "banner":
+                elif message.get("command") in ["banner", "persistent_banner"]:
+                    if client_type == "control":
+                        await manager.broadcast_to_overlays(json.dumps(message))
+                elif message.get("command") == "remove_banner":
                     if client_type == "control":
                         await manager.broadcast_to_overlays(json.dumps(message))
                 elif all(key in message for key in ["time", "home", "away"]):
