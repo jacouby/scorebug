@@ -4,3 +4,7 @@ uvicorn[standard]
 pywebview
 pyinstaller
 websockets
+
+dev:
+pip install "fastapi[standard]"
+pyinstaller
