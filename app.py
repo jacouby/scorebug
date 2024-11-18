@@ -13,5 +13,5 @@ if __name__ == '__main__':
     server_thread.start()
 
     # Create a webview window
-    webview.create_window('Control UI', 'http://localhost:8000/control.html')
+    webview.create_window('Scorebug', 'http://localhost:8000/control')
     webview.start() 

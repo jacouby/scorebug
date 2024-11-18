@@ -27,13 +27,18 @@ jobs:
         venv\Scripts\activate
         pip3 install -U -r requirements.txt
 
-    - name: Build with PyInstaller
+    - name: Build Main with PyInstaller
       run: |
         venv\Scripts\activate
-        pyinstaller --onefile --windowed --name Scorebug app.py
+        pyinstaller Scorebug.spec
+
+    - name: Build Console/Debug with PyInstaller
+      run: |
+        venv\Scripts\activate
+        pyinstaller ScorebugConsole.spec
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Scorebug.exe
-        path: dist/Scorebug.exe
+        name: Scorebug
+        path: dist/

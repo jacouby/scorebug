@@ -1,13 +1,27 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 import json
 from typing import Dict, List
+import os
+import sys
 
 app = FastAPI()
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="static", ), name="static", )
+def get_resource_path(relative_path):
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
+
+# Mount static files with the correct path
+static_path = get_resource_path('static')
+print(f"Mounting static files from: {static_path}")  # Debug print
+app.mount("/static", StaticFiles(directory=static_path), name="static")
+
 # Default state
 DEFAULT_STATE = {
     "time": {
@@ -62,12 +76,16 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-
-
 # Helper function to read HTML content
 def read_html(filename: str) -> str:
-    with open(filename, "r") as file:
-        return file.read()
+    try:
+        file_path = get_resource_path(filename)
+        print(f"Reading file from: {file_path}")  # Debug print
+        with open(file_path, "r", encoding='utf-8') as file:
+            return file.read()
+    except Exception as e:
+        print(f"Error reading file {filename}: {str(e)}")  # Debug print
+        raise HTTPException(status_code=500, detail=f"Could not read {filename}")
 
 # Serve the overlay.html file
 @app.get("/overlay")
