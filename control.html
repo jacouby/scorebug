@@ -44,6 +44,7 @@
             document.getElementById('awayColor').value = data.away.color;
             document.getElementById('homeBorder').style.borderColor = data.home.color;
             document.getElementById('awayBorder').style.borderColor = data.away.color;
+            updateTeamColors(data.home.color, data.away.color);
         }
 
         function sendData() {
@@ -65,6 +66,7 @@
             };
             document.getElementById('homeBorder').style.borderColor = data.home.color;
             document.getElementById('awayBorder').style.borderColor = data.away.color;
+            updateTeamColors(data.home.color, data.away.color);
             socket.send(JSON.stringify(data));
         }
 
@@ -104,92 +106,118 @@
             };
             socket.send(JSON.stringify(bannerData));
         }
+
+        function updateTeamColors(homeColor, awayColor) {
+            document.documentElement.style.setProperty('--home-color', homeColor);
+            document.documentElement.style.setProperty('--away-color', awayColor);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // No more color input event listeners
+        });
     </script>
 </head>
 
 <body class="control-body">
-    <div class="control-container">
-        <h1 class="control-title">Control Page</h1>
-        <form onsubmit="event.preventDefault(); sendData();">
-            <div class="control-section">
-                <div class="control-item">
-                    <label for="timeActivated">Time Activated:</label>
-                    <input type="checkbox" id="timeActivated">
+    <div class="control-body-width">
+        <div class="control-container">
+            <h1 class="control-title">Control Page</h1>
+            <p>Overlay available @ <a href="http://localhost:8000/overlay">http://localhost:8000/overlay</a></p>
+        </div>
+        <div class="control-container">
+            <form onsubmit="event.preventDefault(); sendData();">
+                <div class="control-section">
+                    <h2 class="control-title">General Settings</h2>
+                    <div class="control-item">
+                        <label for="timeActivated">Time Activated:</label>
+                        <input type="checkbox" id="timeActivated">
+                    </div>
+                    <div class="control-item">
+                        <label for="gameTime">Game Time:</label>
+                        <input type="text" id="gameTime" value="00:00" class="control-input">
+                    </div>
                 </div>
-                <div class="control-item">
-                    <label for="gameTime">Game Time:</label>
-                    <input type="text" id="gameTime" value="00:00" class="control-input">
-                </div>
-            </div>
-            <div class="control-teams">
-                <div class="home">
-                    <div id="homeBorder" class="team-border" style="border: 3px solid #1303c8">
-                        <span class="team-title">Home Team</span>
-                        <div class="control-item">
-                            <label for="homeName">Name:</label>
-                            <input type="text" id="homeName" value="Home Team" class="control-input">
+                <div class="control-teams">
+                    <div class="home">
+                        <div id="homeBorder" class="team-border" style="border: 3px solid #1303c8">
+                            <span class="team-title">Home Team</span>
+                            <div class="control-item">
+                                <label for="homeName">Name:</label>
+                                <input type="text" id="homeName" value="Home Team" class="control-input">
+                            </div>
+                            <div class="control-item">
+                                <label for="homeScore">Score:</label>
+                                <input type="number" id="homeScore" value="0" class="control-input">
+                            </div>
+                            <div class="control-item">
+                                <label for="homeColor">Color:</label>
+                                <input type="color" id="homeColor" value="#1303c8" class="color-input">
+                            </div>
                         </div>
-                        <div class="control-item">
-                            <label for="homeScore">Score:</label>
-                            <input type="number" id="homeScore" value="0" class="control-input">
-                        </div>
-                        <div class="control-item">
-                            <label for="homeColor">Color:</label>
-                            <input type="color" id="homeColor" value="#1303c8" class="color-input">
+                    </div>
+                    <div class="away">
+                        <div id="awayBorder" class="team-border" style="border: 3px solid #ff0000">
+                            <span class="team-title">Away Team</span>
+                            <div class="control-item">
+                                <label for="awayName">Name:</label>
+                                <input type="text" id="awayName" value="Away Team" class="control-input">
+                            </div>
+                            <div class="control-item">
+                                <label for="awayScore">Score:</label>
+                                <input type="number" id="awayScore" value="0" class="control-input">
+                            </div>
+                            <div class="control-item">
+                                <label for="awayColor">Color:</label>
+                                <input type="color" id="awayColor" value="#ff0000" class="color-input">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="away">
-                    <div id="awayBorder" class="team-border" style="border: 3px solid #ff0000">
-                        <span class="team-title">Away Team</span>
-                        <div class="control-item">
-                            <label for="awayName">Name:</label>
-                            <input type="text" id="awayName" value="Away Team" class="control-input">
-                        </div>
-                        <div class="control-item">
-                            <label for="awayScore">Score:</label>
-                            <input type="number" id="awayScore" value="0" class="control-input">
-                        </div>
-                        <div class="control-item">
-                            <label for="awayColor">Color:</label>
-                            <input type="color" id="awayColor" value="#ff0000" class="color-input">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="control-buttons">
-                <button class="send-button" type="submit">Send Data</button>
-                <button class="reset-button" type="button" onclick="resetData()">Reset</button>
-            </div>
-        </form>
-
-        <div class="banner-section bannerControlContainer">
-            <h2>Banner Settings</h2>
-            <form onsubmit="event.preventDefault(); sendBannerData();">
-                <div class="control-item">
-                    <label for="bannerText">Banner Text:</label>
-                    <input type="text" id="bannerText" class="control-input">
-                </div>
-                <div class="control-item bannerBgColor">
-                    <label for="bannerBgColor">Background Color:</label>
-                    <input type="color" id="bannerBgColor" value="#000000" class="color-input">
-                    <button type="button" onclick="setBannerBgColor('home')">Home Color</button>
-                    <button type="button" onclick="setBannerBgColor('away')">Away Color</button>
-                </div>
-                <div class="control-item"></div>
-                    <label for="bannerBgColor">Text Color:</label>
-                    <input type="color" id="bannerTextColor" value="#ffffff" class="color-input">
-                </div>
-                <div class="control-item">
-                    <label for="bannerDuration">Duration (seconds):</label>
-                    <input type="number" id="bannerDuration" value="10" class="control-input">
-                </div>
-                <div class="bannerSend">
-                    <button type="submit" class="send-button">Send Banner</button>
-                    <button type="button" class="send-button" onclick="sendPersistentBanner()">Hold Banner in Place</button>
-                    <button type="button" class="reset-button" onclick="removeBanner()">Remove Banner</button>
+                <div class="control-buttons">
+                    <button class="send-button" type="submit">Send Data</button>
+                    <button class="reset-button" type="button" onclick="resetData()">Reset</button>
                 </div>
             </form>
+        </div>
+        <div class="control-container">
+            <div class="banner-section bannerControlContainer">
+                <h2 class="control-title">Banner Settings</h2>
+                <form onsubmit="event.preventDefault(); sendBannerData();">
+                    <div class="control-item">
+                        <label for="bannerText">Banner Text:</label>
+                        <input type="text" id="bannerText" class="control-input">
+                    </div>
+                    <div class="control-item-container">
+                        <div class="control-item">
+                            <label for="bannerBgColor">Background Color:</label>
+                            <input type="color" id="bannerBgColor" value="#000000" class="color-input">
+                        </div>
+                        <div class="bannerBgColor">
+                            <button type="button" onclick="setBannerBgColor('home')" class="home-color-btn">Home Color</button>
+                            <button type="button" onclick="setBannerBgColor('away')" class="away-color-btn">Away Color</button>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <label for="bannerBgColor">Text Color:</label>
+                        <input type="color" id="bannerTextColor" value="#ffffff" class="color-input">
+                    </div>
+                    <div class="control-item">
+                        <label for="bannerDuration">Duration (seconds):</label>
+                        <input type="number" id="bannerDuration" value="10" class="control-input">
+                    </div>
+                    <div class="bannerSend">
+                        <button type="submit" class="send-button">Send Banner</button>
+                        <button type="button" class="send-button" onclick="sendPersistentBanner()">Hold Banner in Place</button>
+                        <button type="button" class="reset-button" onclick="removeBanner()">Remove Banner</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="control-container">
+            <div class="control-item">
+                <h2 class="control-title">Pop-Up Settings</h2>
+            </div>
+            
         </div>
     </div>
 </body>

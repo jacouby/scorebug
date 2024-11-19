@@ -115,6 +115,7 @@ async def websocket_endpoint(
                     global current_state
                     current_state = DEFAULT_STATE.copy()
                     if client_type == "control":
+                        await websocket.send_text(json.dumps(current_state))
                         await manager.broadcast_to_overlays(json.dumps(current_state))
                 elif message.get("command") in ["banner", "persistent_banner"]:
                     if client_type == "control":
