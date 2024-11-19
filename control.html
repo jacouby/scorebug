@@ -115,6 +115,70 @@
         document.addEventListener('DOMContentLoaded', function() {
             // No more color input event listeners
         });
+
+        let activePopup = null;
+
+        function sendPopupData() {
+            if (activePopup) {
+                alert("A popup is already active. Please remove it first.");
+                return;
+            }
+
+            const popupData = {
+                command: "popup",
+                text: document.getElementById('popupText').value,
+                team: document.getElementById('popupTeam').value,
+                bgColor: document.getElementById('popupBgColor').value,
+                textColor: document.getElementById('popupTextColor').value,
+                duration: parseInt(document.getElementById('popupDuration').value, 10) * 1000
+            };
+            
+            activePopup = popupData;
+            updateActivePopupsList();
+            socket.send(JSON.stringify(popupData));
+        }
+
+        function sendPersistentPopup() {
+            if (activePopup) {
+                alert("A popup is already active. Please remove it first.");
+                return;
+            }
+
+            const popupData = {
+                command: "persistent_popup",
+                text: document.getElementById('popupText').value,
+                team: document.getElementById('popupTeam').value,
+                bgColor: document.getElementById('popupBgColor').value,
+                textColor: document.getElementById('popupTextColor').value
+            };
+            
+            activePopup = popupData;
+            updateActivePopupsList();
+            socket.send(JSON.stringify(popupData));
+        }
+
+        function removePopup() {
+            const popupData = {
+                command: "remove_popup"
+            };
+            activePopup = null;
+            updateActivePopupsList();
+            socket.send(JSON.stringify(popupData));
+        }
+
+        function updateActivePopupsList() {
+            const listDiv = document.getElementById('activePopupsList');
+            if (activePopup) {
+                listDiv.innerHTML = `
+                    <div class="active-popup-item">
+                        <span>${activePopup.text}</span>
+                        <span>(${activePopup.team} team)</span>
+                    </div>
+                `;
+            } else {
+                listDiv.innerHTML = 'No active popups';
+            }
+        }
     </script>
 </head>
 
@@ -214,10 +278,44 @@
             </div>
         </div>
         <div class="control-container">
-            <div class="control-item">
-                <h2 class="control-title">Pop-Up Settings</h2>
+            <div class="popup-section popupControlContainer">
+                <form onsubmit="event.preventDefault(); sendPopupData();">
+                    <div class="control-item">
+                        <label for="popupText">Popup Text:</label>
+                        <input type="text" id="popupText" class="control-input">
+                    </div>
+                    <div class="control-item">
+                        <label for="popupTeam">Team:</label>
+                        <select id="popupTeam" class="control-input">
+                            <option value="home">Home</option>
+                            <option value="away">Away</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label for="popupBgColor">Background Color:</label>
+                        <input type="color" id="popupBgColor" value="#000000" class="color-input">
+                    </div>
+                    <div class="control-item">
+                        <label for="popupTextColor">Text Color:</label>
+                        <input type="color" id="popupTextColor" value="#ffffff" class="color-input">
+                    </div>
+                    <div class="control-item">
+                        <label for="popupDuration">Duration (seconds):</label>
+                        <input type="number" id="popupDuration" value="10" class="control-input">
+                    </div>
+                    <div class="popupSend">
+                        <button type="submit" class="send-button">Send Popup</button>
+                        <button type="button" class="send-button" onclick="sendPersistentPopup()">Hold Popup in Place</button>
+                        <button type="button" class="reset-button" onclick="removePopup()">Remove Popup</button>
+                    </div>
+                </form>
+                <div class="active-popups">
+                    <h3>Active Popups</h3>
+                    <div id="activePopupsList">
+                        No active popups
+                    </div>
+                </div>
             </div>
-            
         </div>
     </div>
 </body>
