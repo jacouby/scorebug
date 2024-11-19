@@ -50,12 +50,14 @@
                 const data = JSON.parse(event.data);
                 if (data.command === "banner" || data.command === "persistent_banner") {
                     showBanner(data);
+                } else if (data.command === "popup" || data.command === "persistent_popup") {
+                    showPopup(data);
+                } else if (data.command === "remove_banner") {
+                    forceRemoveBanner();
+                } else if (data.command === "remove_popup") {
+                    forceRemovePopup();
                 } else {
-                    if (data.command === "remove_banner") {
-                        forceRemoveBanner(data)
-                    } else {
-                        updatePage(data);
-                    }
+                    updatePage(data);
                 }
             } catch (e) {
                 console.error("Error parsing JSON:", e);
@@ -116,14 +118,64 @@
             }, 1500)
         }
 
+        function showPopup(data) {
+            const popup = document.getElementById('popup');
+            const popupText = document.getElementById('popupText');
+            const overlayContainer = document.querySelector(".overlay-container")
+
+            popupText.textContent = data.text;
+            popup.style.backgroundColor = data.bgColor;
+            popupText.style.color = data.textColor;
+            
+            // Remove existing classes
+            popup.classList.remove('home', 'away', 'slide-up', 'slide-down');
+            
+            // Add team-specific class
+            popup.classList.add(data.team);
+            
+            popup.style.display = 'block';
+            void popup.offsetWidth; // Force reflow
+            popup.classList.add('slide-up');
+
+            setTimeout(() => {
+                        if (data.team == 'away') {
+                            overlayContainer.classList.add('leftPop')
+                        } else {
+                            overlayContainer.classList.add('rightPop')
+                        }
+                    }, 250);
+
+            if (data.command !== "persistent_popup") {
+                
+                setTimeout(() => {
+                    popup.classList.remove('slide-up');
+                    popup.classList.add('slide-down');
+                    overlayContainer.classList.remove("rightPop", "leftPop")
+                    setTimeout(() => {
+                        popup.style.display = 'none';
+                        console.log("Popup Removed")
+                    }, 500);
+                }, data.duration || 10000);
+            }
+        }
+
+        function forceRemovePopup() {
+            const popup = document.getElementById('popup');
+            popup.classList.remove('slide-up');
+            popup.classList.add('slide-down');
+            overlayContainer.classList.remove("rightPop", "leftPop")
+            setTimeout(() => {
+                popup.style.display = 'none';
+                console.log("Popup Removed")
+            }, 500);
+        }
+
     </script>
 </head>
 
 <body class="overlay-body">
     <div class="bannerContainer" id="banner" style="display: none;">
-        <span id="bannerText" class="bannerText">
-            test text
-        </span>
+        <span id="bannerText" class="bannerText"></span>
     </div>
     <div class="overlay-container">
         <div class="scoreContainer">
@@ -137,6 +189,9 @@
                 <span class="nameHome">Home Team</span>
             </div>
         </div>
+    </div>
+    <div class="popupContainer" id="popup">
+        <span id="popupText" class="popupText"></span>
     </div>
 </body>
 

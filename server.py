@@ -2,7 +2,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPExceptio
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 import json
-from typing import Dict, List
+from typing import Dict, List, Optional
 import os
 import sys
 
@@ -37,6 +37,12 @@ DEFAULT_STATE = {
         "name": "Away Team",
         "score": 0,
         "color": "#ff0000"
+    },
+    "popup": {
+        "active": False,
+        "text": "",
+        "team": "",
+        "timestamp": None
     }
 }
 
@@ -76,6 +82,13 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+# Add new class to track popup state
+class PopupState:
+    def __init__(self):
+        self.active_popup: Optional[dict] = None
+
+popup_manager = PopupState()
+
 # Helper function to read HTML content
 def read_html(filename: str) -> str:
     try:
@@ -111,29 +124,72 @@ async def websocket_endpoint(
             data = await websocket.receive_text()
             try:
                 message = json.loads(data)
-                if message.get("command") == "reset":
+                command = message.get("command")
+                
+                if command == "reset":
                     global current_state
                     current_state = DEFAULT_STATE.copy()
+                    popup_manager.active_popup = None
                     if client_type == "control":
+                        await websocket.send_text(json.dumps(current_state))
                         await manager.broadcast_to_overlays(json.dumps(current_state))
-                elif message.get("command") in ["banner", "persistent_banner"]:
+                
+                elif command in ["banner", "persistent_banner"]:
                     if client_type == "control":
                         await manager.broadcast_to_overlays(json.dumps(message))
-                elif message.get("command") == "remove_banner":
+                
+                elif command in ["popup", "persistent_popup"]:
+                    if client_type == "control":
+                        if popup_manager.active_popup is None:
+                            popup_manager.active_popup = message
+                            # Send confirmation to control client
+                            await websocket.send_text(json.dumps({
+                                "status": "success",
+                                "message": "Popup activated",
+                                "popup_data": message
+                            }))
+                            # Broadcast to overlay clients
+                            await manager.broadcast_to_overlays(json.dumps(message))
+                        else:
+                            # Send error to control client
+                            await websocket.send_text(json.dumps({
+                                "status": "error",
+                                "message": "A popup is already active"
+                            }))
+                
+                elif command == "remove_popup":
+                    if client_type == "control":
+                        popup_manager.active_popup = None
+                        # Send confirmation to control client
+                        await websocket.send_text(json.dumps({
+                            "status": "success",
+                            "message": "Popup removed"
+                        }))
+                        # Broadcast to overlay clients
+                        await manager.broadcast_to_overlays(json.dumps(message))
+                
+                elif command == "remove_banner":
                     if client_type == "control":
                         await manager.broadcast_to_overlays(json.dumps(message))
+                
                 elif all(key in message for key in ["time", "home", "away"]):
                     if client_type == "control":
-                        # Update current state
                         current_state = message
-                        # Broadcast the message to all overlay clients
                         await manager.broadcast_to_overlays(json.dumps(message))
+                
                 else:
                     if client_type == "control":
-                        await websocket.send_text("Missing required fields")
+                        await websocket.send_text(json.dumps({
+                            "status": "error",
+                            "message": "Missing required fields"
+                        }))
+                        
             except json.JSONDecodeError:
                 if client_type == "control":
-                    await websocket.send_text("Invalid JSON received")
+                    await websocket.send_text(json.dumps({
+                        "status": "error",
+                        "message": "Invalid JSON received"
+                    }))
     except WebSocketDisconnect:
         manager.disconnect(websocket, client_type)
         print(f"WebSocket connection closed for {client_type}")
