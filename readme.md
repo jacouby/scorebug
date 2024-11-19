@@ -41,6 +41,6 @@ fastapi run
 ## - TODO
 
 - [ ] Custom Text in middle for current quater/down
-- [ ] Timeout (Make banner stay until manual change)
-- [ ] Flag
+- [X] Timeout (Make banner stay until manual change)
+- [X] PopUps by Team
 - [x] Replace entire overlay with given text in specific color/text
