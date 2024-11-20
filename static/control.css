@@ -164,11 +164,14 @@
     display: flex;
     justify-content: space-between;
     padding: 0.5rem;
-    background-color: #f3f4f6;
+    background-color: #cbd5e1;
     border-radius: 0.5rem;
     margin: 0.5rem 0;
 }
 
 .popup-section {
-    margin-top: 1rem;
+    padding: 1rem;
+    margin: .675rem 0;
+    background-color: #ffffff;
+    border-radius: 1rem;
 }

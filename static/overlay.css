@@ -152,10 +152,6 @@
     display: none;
 }
 
-.popupContainer.active {
-    
-}
-
 .popupContainer.home {
     right: 0.625rem;
 }
