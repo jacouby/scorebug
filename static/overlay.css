@@ -19,7 +19,7 @@
     border-radius: 9999px; /* rounded-full */
     display: flex;
     font-size: 2.25rem; /* text-4xl */
-    transition: border-radius 0.3s ease;
+    transition: border-radius 0.5s ease;
     z-index: 5;
 }
 
@@ -108,7 +108,9 @@
 }
 
 .bannerText {
-    margin: 0rem 1rem;
+    display: block;
+    width: 100%;
+    margin: 0;
     text-align: center;
     font-size: 2.25rem;
 }
