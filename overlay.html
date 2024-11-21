@@ -160,7 +160,9 @@
         }
 
         function forceRemovePopup() {
+            const overlayContainer = document.querySelector(".overlay-container")
             const popup = document.getElementById('popup');
+            
             popup.classList.remove('slide-up');
             popup.classList.add('slide-down');
             overlayContainer.classList.remove("rightPop", "leftPop")
