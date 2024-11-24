@@ -48,19 +48,33 @@
 }
 
 .nameAway, .nameHome {
-    width: 75%; /* w-3/4 */
-    color: #ffffff; /* text-white */
+    width: 75%;
+    color: #ffffff;
     text-overflow: clip;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .nameAway {
     text-align: left;
-    margin-left: 0.75rem; /* ml-3 */
+    margin-left: 1rem;
 }
 
 .nameHome {
     text-align: right;
-    margin-right: 0.75rem; /* mr-3 */
+    margin-right: 1rem;
+}
+
+.teamName {
+    font-size: 2rem;
+    line-height: 2rem;
+}
+
+.teamSubtext {
+    font-size: 1.25rem;
+    line-height: 1.25rem;
+    opacity: 0.8;
 }
 
 .scoreAway, .scoreHome {

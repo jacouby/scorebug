@@ -37,9 +37,11 @@
             document.getElementById('timeActivated').checked = data.time.activated;
             document.getElementById('gameTime').value = data.time.gameTime;
             document.getElementById('homeName').value = data.home.name;
+            document.getElementById('homeSubtext').value = data.home.subtext;
             document.getElementById('homeScore').value = data.home.score;
             document.getElementById('homeColor').value = data.home.color;
             document.getElementById('awayName').value = data.away.name;
+            document.getElementById('awaySubtext').value = data.away.subtext;
             document.getElementById('awayScore').value = data.away.score;
             document.getElementById('awayColor').value = data.away.color;
             document.getElementById('homeBorder').style.borderColor = data.home.color;
@@ -55,11 +57,13 @@
                 },
                 home: {
                     name: document.getElementById('homeName').value,
+                    subtext: document.getElementById('homeSubtext').value,
                     score: parseInt(document.getElementById('homeScore').value, 10),
                     color: document.getElementById('homeColor').value
                 },
                 away: {
                     name: document.getElementById('awayName').value,
+                    subtext: document.getElementById('awaySubtext').value,
                     score: parseInt(document.getElementById('awayScore').value, 10),
                     color: document.getElementById('awayColor').value
                 }
@@ -210,6 +214,10 @@
                                 <input type="text" id="homeName" value="Home Team" class="control-input">
                             </div>
                             <div class="control-item">
+                                <label for="homeSubtext">Subtext:</label>
+                                <input type="text" id="homeSubtext" value="" class="control-input">
+                            </div>
+                            <div class="control-item">
                                 <label for="homeScore">Score:</label>
                                 <input type="number" id="homeScore" value="0" class="control-input">
                             </div>
@@ -225,6 +233,10 @@
                             <div class="control-item">
                                 <label for="awayName">Name:</label>
                                 <input type="text" id="awayName" value="Away Team" class="control-input">
+                            </div>
+                            <div class="control-item">
+                                <label for="awaySubtext">Subtext:</label>
+                                <input type="text" id="awaySubtext" value="" class="control-input">
                             </div>
                             <div class="control-item">
                                 <label for="awayScore">Score:</label>
