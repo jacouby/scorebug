@@ -183,6 +183,214 @@
                 listDiv.innerHTML = 'No active popups';
             }
         }
+
+        let presets = [];
+
+        function quickAction(action) {
+            const currentData = {
+                time: {
+                    activated: document.getElementById('timeActivated').checked,
+                    gameTime: document.getElementById('gameTime').value
+                },
+                home: {
+                    name: document.getElementById('homeName').value,
+                    subtext: document.getElementById('homeSubtext').value,
+                    score: parseInt(document.getElementById('homeScore').value, 10),
+                    color: document.getElementById('homeColor').value
+                },
+                away: {
+                    name: document.getElementById('awayName').value,
+                    subtext: document.getElementById('awaySubtext').value,
+                    score: parseInt(document.getElementById('awayScore').value, 10),
+                    color: document.getElementById('awayColor').value
+                }
+            };
+
+            switch(action) {
+                case 'homeScoreUp':
+                    currentData.home.score++;
+                    break;
+                case 'homeScoreDown':
+                    currentData.home.score = Math.max(0, currentData.home.score - 1);
+                    break;
+                case 'awayScoreUp':
+                    currentData.away.score++;
+                    break;
+                case 'awayScoreDown':
+                    currentData.away.score = Math.max(0, currentData.away.score - 1);
+                    break;
+            }
+
+            updatePage(currentData);
+            socket.send(JSON.stringify(currentData));
+        }
+
+        function saveNewPreset() {
+            const name = prompt("Enter preset name:");
+            if (!name) return;
+
+            const preset = {
+                name,
+                data: {
+                    time: {
+                        activated: document.getElementById('timeActivated').checked,
+                        gameTime: document.getElementById('gameTime').value
+                    },
+                    home: {
+                        name: document.getElementById('homeName').value,
+                        subtext: document.getElementById('homeSubtext').value,
+                        score: parseInt(document.getElementById('homeScore').value, 10),
+                        color: document.getElementById('homeColor').value
+                    },
+                    away: {
+                        name: document.getElementById('awayName').value,
+                        subtext: document.getElementById('awaySubtext').value,
+                        score: parseInt(document.getElementById('awayScore').value, 10),
+                        color: document.getElementById('awayColor').value
+                    }
+                }
+            };
+
+            presets.push(preset);
+            updatePresetButtons();
+        }
+
+        function updatePresetButtons() {
+            const container = document.getElementById('presetButtons');
+            container.innerHTML = '';
+            
+            presets.forEach((preset, index) => {
+                const button = document.createElement('button');
+                button.className = 'quick-button';
+                button.style.backgroundColor = '#4B5563';
+                button.textContent = preset.name;
+                button.onclick = () => loadPreset(index);
+                container.appendChild(button);
+            });
+        }
+
+        function loadPreset(index) {
+            const preset = presets[index];
+            updatePage(preset.data);
+            socket.send(JSON.stringify(preset.data));
+        }
+
+        function savePresetsToFile() {
+            const dataStr = JSON.stringify(presets, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'scorebug_presets.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function loadPresetsFromFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = event => {
+                    try {
+                        presets = JSON.parse(event.target.result);
+                        updatePresetButtons();
+                    } catch (err) {
+                        alert('Error loading presets file');
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        // Initialize preset buttons when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePresetButtons();
+        });
+
+        function updateScoreButtons() {
+            const sport = document.getElementById('sportType').value;
+            const homeContainer = document.getElementById('homeScoreButtons');
+            const awayContainer = document.getElementById('awayScoreButtons');
+            
+            let buttons = [];
+            
+            switch(sport) {
+                case 'football':
+                    buttons = [
+                        { value: 1, label: '+1 (PAT)' },
+                        { value: 2, label: '+2 (Conv)' },
+                        { value: 3, label: '+3 (FG)' },
+                        { value: 6, label: '+6 (TD)' },
+                        { value: -1, label: '-1' },
+                        { value: -2, label: '-2' },
+                        { value: -3, label: '-3' },
+                        { value: -6, label: '-6' }
+                    ];
+                    break;
+                case 'basketball':
+                    buttons = [
+                        { value: 1, label: '+1 (FT)' },
+                        { value: 2, label: '+2' },
+                        { value: 3, label: '+3' },
+                        { value: -1, label: '-1' },
+                        { value: -2, label: '-2' },
+                        { value: -3, label: '-3' }
+                    ];
+                    break;
+                default:
+                    buttons = [
+                        { value: 1, label: '+1' },
+                        { value: 2, label: '+2' },
+                        { value: 3, label: '+3' },
+                        { value: -1, label: '-1' },
+                        { value: -2, label: '-2' },
+                        { value: -3, label: '-3' }
+                    ];
+            }
+            
+            // Update home buttons
+            homeContainer.innerHTML = buttons.map(btn => `
+                <button onclick="updateScore('home', ${btn.value})" class="quick-button score-button home-color">
+                    ${btn.label}
+                </button>
+            `).join('');
+            
+            // Update away buttons
+            awayContainer.innerHTML = buttons.map(btn => `
+                <button onclick="updateScore('away', ${btn.value})" class="quick-button score-button away-color">
+                    ${btn.label}
+                </button>
+            `).join('');
+        }
+
+        function updateScore(team, value) {
+            const scoreElement = document.getElementById(`${team}Score`);
+            let currentScore = parseInt(scoreElement.value, 10);
+            currentScore += value;
+            
+            // Prevent negative scores
+            if (currentScore < 0) currentScore = 0;
+            
+            scoreElement.value = currentScore;
+            sendData(); // Send the updated score to the server
+        }
+
+        // Initialize score buttons when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePresetButtons();
+            updateScoreButtons();
+        });
     </script>
 </head>
 
@@ -326,6 +534,44 @@
                     <h3>Active Popups</h3>
                     <div id="activePopupsList">
                         No active popups
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-container">
+            <div class="quick-actions-section">
+                <h2 class="control-title">Quick Actions</h2>
+                <div class="sport-selector">
+                    <label for="sportType">Sport:</label>
+                    <select id="sportType" onchange="updateScoreButtons()" class="control-input">
+                        <option value="default">Default</option>
+                        <option value="football">Football</option>
+                        <option value="basketball">Basketball</option>
+                    </select>
+                </div>
+                <div class="quick-actions-grid">
+                    <div class="quick-actions-group">
+                        <h3>Home Score</h3>
+                        <div class="quick-button-grid" id="homeScoreButtons">
+                            <!-- Score buttons will be added dynamically -->
+                        </div>
+                    </div>
+                    <div class="quick-actions-group">
+                        <h3>Away Score</h3>
+                        <div class="quick-button-grid" id="awayScoreButtons">
+                            <!-- Score buttons will be added dynamically -->
+                        </div>
+                    </div>
+                    <div class="quick-actions-group">
+                        <h3>Presets</h3>
+                        <div class="quick-button-grid" id="presetButtons">
+                            <!-- Preset buttons will be added here dynamically -->
+                        </div>
+                        <div class="preset-controls">
+                            <button onclick="saveNewPreset()" class="send-button">Save Current as Preset</button>
+                            <button onclick="loadPresetsFromFile()" class="send-button">Load Presets</button>
+                            <button onclick="savePresetsToFile()" class="send-button">Save Presets</button>
+                        </div>
                     </div>
                 </div>
             </div>
