@@ -32,9 +32,9 @@
 }
 
 .awayTeam, .homeTeam {
-    width: 43%; /* w-5/12 */
+    width: 40%; /* w-5/12 */
     min-height: 2.5rem; /* min-h-10 */
-    padding: 0.25rem; /* p-1 */
+    padding: 0 0.25rem; 
     border-radius: 9999px; /* rounded-full */
     display: flex;
 }
@@ -54,6 +54,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding: 0.5rem 0;
 }
 
 .nameAway {
@@ -79,23 +80,26 @@
 
 .scoreAway, .scoreHome {
     width: 25%; /* w-1/4 */
-    height: 2.5rem; /* h-10 */
+    /*height: 3.25; /* h-10 */
     color: #ffffff; /* text-white */
     text-align: center;
+    font-size: 2.25rem;
+    margin: 0 auto;
+    
 }
 
 .scoreAway {
-    text-align: right;
+    /* text-align: right; */
     margin-right: 0.75rem; /* mr-3 */
 }
 
 .scoreHome {
-    text-align: left;
+    /* text-align: left; */
     margin-left: 0.75rem; /* ml-3 */
 }
 
 .gameTime {
-    width: 14%; /* w-2/12 */
+    width: 20%; /* w-2/12 */
     min-height: 2.5rem; /* min-h-10 */
     margin: auto;
     text-align: center;
