@@ -432,7 +432,7 @@
             }
 
             const nameType = document.getElementById('bannerNameType').value;
-            const displayName = nameType === 'main' ? teamData.name : nameType === 'sub' ? teamData.subtext : `${teamData.subtext} ${teamData.name}`;
+            const displayName = nameType === 'main' ? teamData.name : nameType === 'sub' ? teamData.subtext : `${teamData.name} ${teamData.name}`;
             
             const bannerData = {
                 command: "banner",
