@@ -47,6 +47,8 @@
             document.getElementById('homeBorder').style.borderColor = data.home.color;
             document.getElementById('awayBorder').style.borderColor = data.away.color;
             updateTeamColors(data.home.color, data.away.color);
+            document.querySelector('.quick-actions-group.scoreHome h3').textContent = `Home Score (${data.home.name} ${data.home.subtext})`
+            document.querySelector('.quick-actions-group.scoreAway h3').textContent = `Away Score (${data.away.name} ${data.away.subtext})`
         }
 
         function sendData() {
@@ -328,49 +330,63 @@
             switch(sport) {
                 case 'football':
                     buttons = [
-                        { value: 1, label: '+1 (PAT)' },
-                        { value: 2, label: '+2 (Conv)' },
-                        { value: 3, label: '+3 (FG)' },
-                        { value: 6, label: '+6 (TD)' },
-                        { value: -1, label: '-1' },
-                        { value: -2, label: '-2' },
-                        { value: -3, label: '-3' },
-                        { value: -6, label: '-6' }
+                        { value: 1, label: '+1 (PAT)', banner: true },
+                        { value: 2, label: '+2 (Conv)', banner: true },
+                        { value: 3, label: '+3 (FG)', banner: true },
+                        { value: 6, label: '+6 (TD)', banner: true },
+                        { value: -1, label: '-1', banner: false },
+                        { value: -2, label: '-2', banner: false },
+                        { value: -3, label: '-3', banner: false },
+                        { value: -6, label: '-6', banner: false }
                     ];
                     break;
                 case 'basketball':
                     buttons = [
-                        { value: 1, label: '+1 (FT)' },
-                        { value: 2, label: '+2' },
-                        { value: 3, label: '+3' },
-                        { value: -1, label: '-1' },
-                        { value: -2, label: '-2' },
-                        { value: -3, label: '-3' }
+                        { value: 1, label: '+1 (FT)', banner: true },
+                        { value: 2, label: '+2', banner: true },
+                        { value: 3, label: '+3', banner: true },
+                        { value: -1, label: '-1', banner: false },
+                        { value: -2, label: '-2', banner: false },
+                        { value: -3, label: '-3', banner: false }
                     ];
                     break;
                 default:
                     buttons = [
-                        { value: 1, label: '+1' },
-                        { value: 2, label: '+2' },
-                        { value: 3, label: '+3' },
-                        { value: -1, label: '-1' },
-                        { value: -2, label: '-2' },
-                        { value: -3, label: '-3' }
+                        { value: 1, label: '+1', banner: false },
+                        { value: 2, label: '+2', banner: false },
+                        { value: 3, label: '+3', banner: false },
+                        { value: -1, label: '-1', banner: false },
+                        { value: -2, label: '-2', banner: false },
+                        { value: -3, label: '-3', banner: false }
                     ];
             }
             
             // Update home buttons
             homeContainer.innerHTML = buttons.map(btn => `
-                <button onclick="updateScore('home', ${btn.value})" class="quick-button score-button home-color">
-                    ${btn.label}
-                </button>
+                <div class="score-button-group">
+                    <button onclick="updateScore('home', ${btn.value})" class="quick-button score-button home-color">
+                        ${btn.label}
+                    </button>
+                    ${btn.banner && btn.value > 0 ? `
+                        <button onclick="sendScoreBanner('home', ${btn.value})" class="quick-button banner-button home-color">
+                            🔔
+                        </button>
+                    ` : ''}
+                </div>
             `).join('');
             
             // Update away buttons
             awayContainer.innerHTML = buttons.map(btn => `
-                <button onclick="updateScore('away', ${btn.value})" class="quick-button score-button away-color">
-                    ${btn.label}
-                </button>
+                <div class="score-button-group">
+                    <button onclick="updateScore('away', ${btn.value})" class="quick-button score-button away-color">
+                        ${btn.label}
+                    </button>
+                    ${btn.banner && btn.value > 0 ? `
+                        <button onclick="sendScoreBanner('away', ${btn.value})" class="quick-button banner-button away-color">
+                            🔔
+                        </button>
+                    ` : ''}
+                </div>
             `).join('');
         }
 
@@ -384,6 +400,49 @@
             
             scoreElement.value = currentScore;
             sendData(); // Send the updated score to the server
+        }
+
+        function sendScoreBanner(team, points) {
+            const teamData = team === 'home' ? {
+                name: document.getElementById('homeName').value,
+                subtext: document.getElementById('homeSubtext').value,
+                color: document.getElementById('homeColor').value
+            } : {
+                name: document.getElementById('awayName').value,
+                subtext: document.getElementById('awaySubtext').value,
+                color: document.getElementById('awayColor').value
+            };
+
+            let bannerText = '';
+            switch(points) {
+                case 1:
+                    bannerText = 'Extra Point';
+                    break;
+                case 2:
+                    bannerText = '2-Point Conversion';
+                    break;
+                case 3:
+                    bannerText = 'Field Goal';
+                    break;
+                case 6:
+                    bannerText = 'Touchdown';
+                    break;
+                default:
+                    bannerText = `${points} Points`;
+            }
+
+            const nameType = document.getElementById('bannerNameType').value;
+            const displayName = nameType === 'main' ? teamData.name : teamData.subtext || teamData.name;
+            
+            const bannerData = {
+                command: "banner",
+                text: `${displayName} ${bannerText}!`,
+                bgColor: teamData.color,
+                textColor: "#ffffff",
+                duration: 5000 // 5 seconds
+            };
+            
+            socket.send(JSON.stringify(bannerData));
         }
 
         // Initialize score buttons when page loads
@@ -548,15 +607,20 @@
                         <option value="football">Football</option>
                         <option value="basketball">Basketball</option>
                     </select>
+                    <label for="bannerNameType">Banner Name:</label>
+                    <select id="bannerNameType" class="control-input">
+                        <option value="main">Main Name</option>
+                        <option value="sub">Sub Name</option>
+                    </select>
                 </div>
                 <div class="quick-actions-grid">
-                    <div class="quick-actions-group">
+                    <div class="quick-actions-group scoreHome">
                         <h3>Home Score</h3>
                         <div class="quick-button-grid" id="homeScoreButtons">
                             <!-- Score buttons will be added dynamically -->
                         </div>
                     </div>
-                    <div class="quick-actions-group">
+                    <div class="quick-actions-group scoreAway">
                         <h3>Away Score</h3>
                         <div class="quick-button-grid" id="awayScoreButtons">
                             <!-- Score buttons will be added dynamically -->

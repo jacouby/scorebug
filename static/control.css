@@ -253,3 +253,21 @@
     width: 100%;
     text-align: center;
 }
+
+.score-button-group {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.score-button-group .score-button {
+    flex: 1;
+}
+
+.score-button-group .banner-button {
+    width: 2.5rem;
+    padding: 0.25rem;
+}
+
+.banner-button {
+    font-size: 1.25rem;
+}
