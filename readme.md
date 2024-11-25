@@ -12,14 +12,14 @@ Simple localhosted web-based scorebug
 
 1. Clone the repository:
 ```bash
-git clone //TODO ADD LINK
-cd 
+git clone https://github.com/jacouby/Medford-Sports.git
+cd Medford-Sports
 ```
 
 2. Create and activate a Python virtual environment:
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+source venv/bin/activate  # Or On Windows, use: venv\Scripts\activate
 ```
 
 3. Install Python dependencies:
