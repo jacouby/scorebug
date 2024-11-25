@@ -82,19 +82,18 @@
     width: 25%; /* w-1/4 */
     /*height: 3.25; /* h-10 */
     color: #ffffff; /* text-white */
-    text-align: center;
     font-size: 2.25rem;
     margin: 0 auto;
     
 }
 
 .scoreAway {
-    /* text-align: right; */
+    text-align: right;
     margin-right: 0.75rem; /* mr-3 */
 }
 
 .scoreHome {
-    /* text-align: left; */
+    text-align: left;
     margin-left: 0.75rem; /* ml-3 */
 }
 
