@@ -5,8 +5,7 @@ Simple localhosted web-based scorebug
 ## Setup & Installation
 
 ### Prerequisites
-- Python 3.8+
-- Node.js & npm
+- Python 3.12+
 
 ### Initial Setup
 
