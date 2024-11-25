@@ -29,12 +29,14 @@ DEFAULT_STATE = {
         "gameTime": "00:00"
     },
     "home": {
-        "name": "Home Team",
+        "name": "Home",
+        "subtext": "Team",
         "score": 0,
         "color": "#1303c8"
     },
     "away": {
-        "name": "Away Team",
+        "name": "Away",
+        "subtext": "Team",
         "score": 0,
         "color": "#ff0000"
     },

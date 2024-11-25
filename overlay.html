@@ -75,13 +75,15 @@
                 document.querySelector('.gameTime').textContent = '@';
             }
             if (data.home) {
-                document.querySelector('.nameHome').textContent = data.home.name;
+                document.querySelector('.homeTeam .teamName').textContent = data.home.name;
+                document.querySelector('.homeTeam .teamSubtext').textContent = data.home.subtext;
                 document.querySelector('.scoreHome').textContent = data.home.score;
                 const homeTeam = document.querySelector('.homeTeam');
                 homeTeam.style.backgroundColor = data.home.color;
             }
             if (data.away) {
-                document.querySelector('.nameAway').textContent = data.away.name;
+                document.querySelector('.awayTeam .teamName').textContent = data.away.name;
+                document.querySelector('.awayTeam .teamSubtext').textContent = data.away.subtext;
                 document.querySelector('.scoreAway').textContent = data.away.score;
                 const awayTeam = document.querySelector('.awayTeam');
                 awayTeam.style.backgroundColor = data.away.color;
@@ -160,7 +162,9 @@
         }
 
         function forceRemovePopup() {
+            const overlayContainer = document.querySelector(".overlay-container")
             const popup = document.getElementById('popup');
+            
             popup.classList.remove('slide-up');
             popup.classList.add('slide-down');
             overlayContainer.classList.remove("rightPop", "leftPop")
@@ -180,13 +184,19 @@
     <div class="overlay-container">
         <div class="scoreContainer">
             <div class="awayTeam">
-                <span class="nameAway">Away Team</span>
+                <div class="nameAway">
+                    <span class="teamName">Away</span>
+                    <span class="teamSubtext">Team</span>
+                </div>
                 <span class="scoreAway">0</span>
             </div>
             <div class="gameTime">00:00</div>
             <div class="homeTeam">
                 <span class="scoreHome">0</span>
-                <span class="nameHome">Home Team</span>
+                <div class="nameHome">
+                    <span class="teamName">Home</span>
+                    <span class="teamSubtext">Team</span>
+                </div>
             </div>
         </div>
     </div>

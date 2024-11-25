@@ -19,7 +19,7 @@
     border-radius: 9999px; /* rounded-full */
     display: flex;
     font-size: 2.25rem; /* text-4xl */
-    transition: border-radius 0.3s ease;
+    transition: border-radius 0.5s ease;
     z-index: 5;
 }
 
@@ -32,9 +32,9 @@
 }
 
 .awayTeam, .homeTeam {
-    width: 43%; /* w-5/12 */
+    width: 40%; /* w-5/12 */
     min-height: 2.5rem; /* min-h-10 */
-    padding: 0.25rem; /* p-1 */
+    padding: 0 0.25rem; 
     border-radius: 9999px; /* rounded-full */
     display: flex;
 }
@@ -48,40 +48,58 @@
 }
 
 .nameAway, .nameHome {
-    width: 75%; /* w-3/4 */
-    color: #ffffff; /* text-white */
+    width: 75%;
+    color: #ffffff;
     text-overflow: clip;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.5rem 0;
 }
 
 .nameAway {
     text-align: left;
-    margin-left: 0.75rem; /* ml-3 */
+    margin-left: 1rem;
 }
 
 .nameHome {
     text-align: right;
-    margin-right: 0.75rem; /* mr-3 */
+    margin-right: 1rem;
+}
+
+.teamName {
+    font-size: 2rem;
+    line-height: 2rem;
+}
+
+.teamSubtext {
+    font-size: 1.25rem;
+    line-height: 1.25rem;
+    opacity: 0.8;
 }
 
 .scoreAway, .scoreHome {
     width: 25%; /* w-1/4 */
-    height: 2.5rem; /* h-10 */
+    /*height: 3.25; /* h-10 */
     color: #ffffff; /* text-white */
     text-align: center;
+    font-size: 2.25rem;
+    margin: 0 auto;
+    
 }
 
 .scoreAway {
-    text-align: right;
+    /* text-align: right; */
     margin-right: 0.75rem; /* mr-3 */
 }
 
 .scoreHome {
-    text-align: left;
+    /* text-align: left; */
     margin-left: 0.75rem; /* ml-3 */
 }
 
 .gameTime {
-    width: 14%; /* w-2/12 */
+    width: 20%; /* w-2/12 */
     min-height: 2.5rem; /* min-h-10 */
     margin: auto;
     text-align: center;
@@ -108,7 +126,9 @@
 }
 
 .bannerText {
-    margin: 0rem 1rem;
+    display: block;
+    width: 100%;
+    margin: 0;
     text-align: center;
     font-size: 2.25rem;
 }
@@ -150,10 +170,6 @@
     background-color: #000000;
     z-index: 0;
     display: none;
-}
-
-.popupContainer.active {
-    
 }
 
 .popupContainer.home {
