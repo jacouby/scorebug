@@ -325,11 +325,14 @@
             const homeContainer = document.getElementById('homeScoreButtons');
             const awayContainer = document.getElementById('awayScoreButtons');
             
-            let buttons = [];
+            let buttons = {
+                scoreButtons: [],
+                flagButtons: []
+            };
             
             switch(sport) {
                 case 'football':
-                    buttons = [
+                    buttons.scoreButtons = [
                         { value: 1, label: '+1 (PAT)', banner: true },
                         { value: 2, label: '+2 (Conv)', banner: true },
                         { value: 3, label: '+3 (FG)', banner: true },
@@ -339,9 +342,14 @@
                         { value: -3, label: '-3', banner: false },
                         { value: -6, label: '-6', banner: false }
                     ];
+                    buttons.flagButtons = [
+                        { label: 'Penalty', color: '#FFD700' },
+                        { label: 'Challenge', color: '#FF0000' },
+                        { label: 'Timeout', color: '#FFA500' }
+                    ];
                     break;
                 case 'basketball':
-                    buttons = [
+                    buttons.scoreButtons = [
                         { value: 1, label: '+1 (FT)', banner: true },
                         { value: 2, label: '+2', banner: true },
                         { value: 3, label: '+3', banner: true },
@@ -349,9 +357,14 @@
                         { value: -2, label: '-2', banner: false },
                         { value: -3, label: '-3', banner: false }
                     ];
+                    buttons.flagButtons = [
+                        { label: 'Foul', color: '#FFD700' },
+                        { label: 'Timeout', color: '#FFA500' },
+                        { label: 'Shot Clock', color: '#FF0000' }
+                    ];
                     break;
                 default:
-                    buttons = [
+                    buttons.scoreButtons = [
                         { value: 1, label: '+1', banner: false },
                         { value: 2, label: '+2', banner: false },
                         { value: 3, label: '+3', banner: false },
@@ -359,35 +372,57 @@
                         { value: -2, label: '-2', banner: false },
                         { value: -3, label: '-3', banner: false }
                     ];
+                    buttons.flagButtons = [
+                        { label: 'Timeout', color: '#FFA500' },
+                        { label: 'Official', color: '#FFD700' }
+                    ];
             }
             
             // Update home buttons
-            homeContainer.innerHTML = buttons.map(btn => `
-                <div class="score-button-group">
-                    <button onclick="updateScore('home', ${btn.value})" class="quick-button score-button home-color">
-                        ${btn.label}
-                    </button>
-                    ${btn.banner && btn.value > 0 ? `
-                        <button onclick="sendScoreBanner('home', ${btn.value})" class="quick-button banner-button home-color">
-                            🔔
+            homeContainer.innerHTML = `
+                ${buttons.scoreButtons.map(btn => `
+                    <div class="score-button-group">
+                        <button onclick="updateScore('home', ${btn.value})" class="quick-button score-button home-color">
+                            ${btn.label}
                         </button>
-                    ` : ''}
-                </div>
-            `).join('');
+                        ${btn.banner && btn.value > 0 ? `
+                            <button onclick="sendScoreBanner('home', ${btn.value})" class="quick-button banner-button home-color">
+                                🔔
+                            </button>
+                        ` : ''}
+                    </div>
+                `).join('')}
+                ${buttons.flagButtons.map(btn => `
+                    <button onclick="sendFlagPopup('home', '${btn.label}')" 
+                            class="quick-button score-button"
+                            style="background-color: ${btn.color}">
+                        🚩 ${btn.label}
+                    </button>
+                `).join('')}
+            `;
             
             // Update away buttons
-            awayContainer.innerHTML = buttons.map(btn => `
-                <div class="score-button-group">
-                    <button onclick="updateScore('away', ${btn.value})" class="quick-button score-button away-color">
-                        ${btn.label}
-                    </button>
-                    ${btn.banner && btn.value > 0 ? `
-                        <button onclick="sendScoreBanner('away', ${btn.value})" class="quick-button banner-button away-color">
-                            🔔
+            awayContainer.innerHTML = `
+                ${buttons.scoreButtons.map(btn => `
+                    <div class="score-button-group">
+                        <button onclick="updateScore('away', ${btn.value})" class="quick-button score-button away-color">
+                            ${btn.label}
                         </button>
-                    ` : ''}
-                </div>
-            `).join('');
+                        ${btn.banner && btn.value > 0 ? `
+                            <button onclick="sendScoreBanner('away', ${btn.value})" class="quick-button banner-button away-color">
+                                🔔
+                            </button>
+                        ` : ''}
+                    </div>
+                `).join('')}
+                ${buttons.flagButtons.map(btn => `
+                    <button onclick="sendFlagPopup('away', '${btn.label}')" 
+                            class="quick-button score-button"
+                            style="background-color: ${btn.color}">
+                        🚩 ${btn.label}
+                    </button>
+                `).join('')}
+            `;
         }
 
         function updateScore(team, value) {
@@ -443,6 +478,35 @@
             };
             
             socket.send(JSON.stringify(bannerData));
+        }
+
+        // Add this new function to handle flag popups
+        function sendFlagPopup(team, flagType) {
+            const teamData = team === 'home' ? {
+                name: document.getElementById('homeName').value,
+                subtext: document.getElementById('homeSubtext').value,
+                color: document.getElementById('homeColor').value
+            } : {
+                name: document.getElementById('awayName').value,
+                subtext: document.getElementById('awaySubtext').value,
+                color: document.getElementById('awayColor').value
+            };
+
+            const nameType = document.getElementById('bannerNameType').value;
+            const displayName = nameType === 'main' ? teamData.name : 
+                               nameType === 'sub' ? teamData.subtext : 
+                               `${teamData.name} ${teamData.subtext}`;
+            
+            const popupData = {
+                command: "persistent_popup",
+                text: `${flagType}`,
+                team: team,
+                bgColor: "#00000",
+                textColor: teamData.color,
+                duration: "" // 5 seconds
+            };
+            
+            socket.send(JSON.stringify(popupData));
         }
 
         // Initialize score buttons when page loads
