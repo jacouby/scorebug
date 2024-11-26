@@ -432,7 +432,7 @@
             }
 
             const nameType = document.getElementById('bannerNameType').value;
-            const displayName = nameType === 'main' ? teamData.name : teamData.subtext || teamData.name;
+            const displayName = nameType === 'main' ? teamData.name : nameType === 'sub' ? teamData.subtext : `${teamData.name} ${teamData.name}`;
             
             const bannerData = {
                 command: "banner",
@@ -609,6 +609,7 @@
                     </select>
                     <label for="bannerNameType">Banner Name:</label>
                     <select id="bannerNameType" class="control-input">
+                        <option value="both">Both Names</option>
                         <option value="main">Main Name</option>
                         <option value="sub">Sub Name</option>
                     </select>
