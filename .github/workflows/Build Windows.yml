@@ -37,11 +37,6 @@ jobs:
         venv\Scripts\activate
         pyinstaller ScorebugConsole.spec
 
-    - name: Build test version with PyInstaller
-      run: |
-        venv\Scripts\activate
-        pyinstaller ScorebugNOFtest.spec
-
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
