@@ -23,7 +23,18 @@
         socket.onmessage = function (event) {
             try {
                 const data = JSON.parse(event.data);
-                updatePage(data);
+                if (data.time && typeof data.time.activated === 'boolean') {
+                    updatePage(data);
+                } else {
+                    console.log('Non State Info')
+                    if (data.status) {
+                        switch (true) {
+                            case (data.message.includes('popup')):
+                                console.log('popup successfully sent')
+                        }
+                    }
+                }
+
             } catch (e) {
                 console.error("Error parsing JSON:", e);
             }
@@ -118,7 +129,7 @@
             document.documentElement.style.setProperty('--away-color', awayColor);
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // No more color input event listeners
         });
 
@@ -138,7 +149,7 @@
                 textColor: document.getElementById('popupTextColor').value,
                 duration: parseInt(document.getElementById('popupDuration').value, 10) * 1000
             };
-            
+
             activePopup = popupData;
             updateActivePopupsList();
             socket.send(JSON.stringify(popupData));
@@ -157,7 +168,7 @@
                 bgColor: document.getElementById('popupBgColor').value,
                 textColor: document.getElementById('popupTextColor').value
             };
-            
+
             activePopup = popupData;
             updateActivePopupsList();
             socket.send(JSON.stringify(popupData));
@@ -208,7 +219,7 @@
                 }
             };
 
-            switch(action) {
+            switch (action) {
                 case 'homeScoreUp':
                     currentData.home.score++;
                     break;
@@ -260,7 +271,7 @@
         function updatePresetButtons() {
             const container = document.getElementById('presetButtons');
             container.innerHTML = '';
-            
+
             presets.forEach((preset, index) => {
                 const button = document.createElement('button');
                 button.className = 'quick-button';
@@ -281,7 +292,7 @@
             const dataStr = JSON.stringify(presets, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
-            
+
             const link = document.createElement('a');
             link.href = url;
             link.download = 'scorebug_presets.json';
@@ -295,11 +306,11 @@
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
-            
+
             input.onchange = e => {
                 const file = e.target.files[0];
                 const reader = new FileReader();
-                
+
                 reader.onload = event => {
                     try {
                         presets = JSON.parse(event.target.result);
@@ -308,15 +319,15 @@
                         alert('Error loading presets file');
                     }
                 };
-                
+
                 reader.readAsText(file);
             };
-            
+
             input.click();
         }
 
         // Initialize preset buttons when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             updatePresetButtons();
         });
 
@@ -326,13 +337,13 @@
             const homeFlags = document.querySelector('.quickPopup.home')
             const awayScores = document.getElementById('awayScoreButtons');
             const awayFlags = document.querySelector('.quickPopup.away')
-            
+
             let buttons = {
                 scoreButtons: [],
                 flagButtons: []
             };
-            
-            switch(sport) {
+
+            switch (sport) {
                 case 'football':
                     buttons.scoreButtons = [
                         { value: 1, label: '+1 (PAT)', banner: true },
@@ -379,9 +390,9 @@
                         { label: 'Official', color: '#FFD700' }
                     ];
             }
-            
+
             // Update home buttons
-            
+
             homeScores.innerHTML = `
                 ${buttons.scoreButtons.map(btn => `
                     <div class="score-button-group">
@@ -396,9 +407,9 @@
                     </div>
                 `).join('')}
             `;
-            
+
             homeFlags.innerHTML = `${buttons.flagButtons.map(btn => `
-                    <button onclick="sendFlagPopup('home', '${btn.label}')" 
+                    <button onclick="sendQuickPopup('home', '${btn.label}')" 
                             class="quick-button score-button"
                             style="background-color: ${btn.color}">
                         🚩 ${btn.label}
@@ -423,7 +434,7 @@
             `;
             console.log('after score')
             awayFlags.innerHTML = `${buttons.flagButtons.map(btn => `
-                    <button onclick="sendFlagPopup('away', '${btn.label}')" 
+                    <button onclick="sendQuickPopup('away', '${btn.label}')" 
                             class="quick-button score-button"
                             style="background-color: ${btn.color}">
                         🚩 ${btn.label}
@@ -435,10 +446,10 @@
             const scoreElement = document.getElementById(`${team}Score`);
             let currentScore = parseInt(scoreElement.value, 10);
             currentScore += value;
-            
+
             // Prevent negative scores
             if (currentScore < 0) currentScore = 0;
-            
+
             scoreElement.value = currentScore;
             sendData(); // Send the updated score to the server
         }
@@ -455,7 +466,7 @@
             };
 
             let bannerText = '';
-            switch(points) {
+            switch (points) {
                 case 1:
                     bannerText = 'Extra Point';
                     break;
@@ -474,7 +485,7 @@
 
             const nameType = document.getElementById('bannerNameType').value;
             const displayName = nameType === 'main' ? teamData.name : nameType === 'sub' ? teamData.subtext : `${teamData.name} ${teamData.name}`;
-            
+
             const bannerData = {
                 command: "banner",
                 text: `${displayName} ${bannerText}!`,
@@ -482,12 +493,12 @@
                 textColor: "#ffffff",
                 duration: 5000 // 5 seconds
             };
-            
+
             socket.send(JSON.stringify(bannerData));
         }
 
         // Add this new function to handle flag popups
-        function sendFlagPopup(team, flagType) {
+        function sendQuickPopup(team, flagType) {
             const teamData = team === 'home' ? {
                 name: document.getElementById('homeName').value,
                 subtext: document.getElementById('homeSubtext').value,
@@ -499,10 +510,10 @@
             };
 
             const nameType = document.getElementById('bannerNameType').value;
-            const displayName = nameType === 'main' ? teamData.name : 
-                               nameType === 'sub' ? teamData.subtext : 
-                               `${teamData.name} ${teamData.subtext}`;
-            
+            const displayName = nameType === 'main' ? teamData.name :
+                nameType === 'sub' ? teamData.subtext :
+                    `${teamData.name} ${teamData.subtext}`;
+
             const popupData = {
                 command: "persistent_popup",
                 text: `${flagType}`,
@@ -511,12 +522,14 @@
                 textColor: teamData.color,
                 duration: "" // 5 seconds
             };
-            
+
+            activePopup = popupData; // Update the activePopup variable
+            updateActivePopupsList(); // Update the active popups list
             socket.send(JSON.stringify(popupData));
         }
 
         // Initialize score buttons when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             updatePresetButtons();
             updateScoreButtons();
         });
@@ -606,8 +619,10 @@
                             <input type="color" id="bannerBgColor" value="#000000" class="color-input">
                         </div>
                         <div class="bannerBgColor">
-                            <button type="button" onclick="setBannerBgColor('home')" class="home-color-btn">Home Color</button>
-                            <button type="button" onclick="setBannerBgColor('away')" class="away-color-btn">Away Color</button>
+                            <button type="button" onclick="setBannerBgColor('home')" class="home-color-btn">Home
+                                Color</button>
+                            <button type="button" onclick="setBannerBgColor('away')" class="away-color-btn">Away
+                                Color</button>
                         </div>
                     </div>
                     <div class="control-item">
@@ -620,7 +635,8 @@
                     </div>
                     <div class="bannerSend">
                         <button type="submit" class="send-button">Send Banner</button>
-                        <button type="button" class="send-button" onclick="sendPersistentBanner()">Hold Banner in Place</button>
+                        <button type="button" class="send-button" onclick="sendPersistentBanner()">Hold Banner in
+                            Place</button>
                         <button type="button" class="reset-button" onclick="removeBanner()">Remove Banner</button>
                     </div>
                 </form>
@@ -655,7 +671,8 @@
                     </div>
                     <div class="popupSend">
                         <button type="submit" class="send-button">Send Popup</button>
-                        <button type="button" class="send-button" onclick="sendPersistentPopup()">Hold Popup in Place</button>
+                        <button type="button" class="send-button" onclick="sendPersistentPopup()">Hold Popup in
+                            Place</button>
                         <button type="button" class="reset-button" onclick="removePopup()">Remove Popup</button>
                     </div>
                 </form>
@@ -703,7 +720,7 @@
                                 <!-- Score buttons will be added dynamically -->
                             </div>
                             <div class="quickPopup away">
-                                    
+
                             </div>
                         </div>
                     </div>
