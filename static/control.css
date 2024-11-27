@@ -199,7 +199,7 @@
     font-weight: 600;
 }
 
-.quick-button-grid {
+.score-button-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 0.5rem;
@@ -270,4 +270,13 @@
 
 .banner-button {
     font-size: 1.25rem;
+}
+
+.quickPopup {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.quickPopup button {
+    margin: 0.5rem 0 ;
 }
