@@ -280,3 +280,12 @@
 .quickPopup button {
     margin: 0.5rem 0 ;
 }
+
+.quickRemove {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.quickRemove button {
+    width: 100% !important;  
+}
