@@ -484,7 +484,7 @@
             }
 
             const nameType = document.getElementById('bannerNameType').value;
-            const displayName = nameType === 'main' ? teamData.name : nameType === 'sub' ? teamData.subtext : `${teamData.name} ${teamData.name}`;
+            const displayName = nameType === 'main' ? teamData.name : nameType === 'sub' ? teamData.subtext : `${teamData.name} ${teamData.subtext}`;
 
             const bannerData = {
                 command: "banner",
@@ -711,6 +711,10 @@
                             <div class="quickPopup home">
 
                             </div>
+                            <div class="quickRemove">
+                                <button class="reset-button" onclick="removeBanner()">Remove Banner</button>
+                                <button class="reset-button" onclick="removePopup('home')">Remove Popup</button>
+                            </div>
                         </div>
                     </div>
                     <div class="quick-actions-group scoreAway">
@@ -721,6 +725,10 @@
                             </div>
                             <div class="quickPopup away">
 
+                            </div>
+                            <div class="quickRemove">
+                                <button class="reset-button" onclick="removeBanner()">Remove Banner</button>
+                                <button class="reset-button" onclick="removePopup('away')">Remove Popup</button>
                             </div>
                         </div>
                     </div>
