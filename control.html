@@ -45,7 +45,6 @@
         };
 
         function updatePage(data) {
-            document.getElementById('timeActivated').checked = data.time.activated;
             document.getElementById('gameTime').value = data.time.gameTime;
             document.getElementById('homeName').value = data.home.name;
             document.getElementById('homeSubtext').value = data.home.subtext;
@@ -65,7 +64,7 @@
         function sendData() {
             const data = {
                 time: {
-                    activated: document.getElementById('timeActivated').checked,
+                    activated: true,
                     gameTime: document.getElementById('gameTime').value
                 },
                 home: {
@@ -202,7 +201,7 @@
         function quickAction(action) {
             const currentData = {
                 time: {
-                    activated: document.getElementById('timeActivated').checked,
+                    activated: true,
                     gameTime: document.getElementById('gameTime').value
                 },
                 home: {
@@ -246,7 +245,7 @@
                 name,
                 data: {
                     time: {
-                        activated: document.getElementById('timeActivated').checked,
+                        activated: true,
                         gameTime: document.getElementById('gameTime').value
                     },
                     home: {
@@ -546,13 +545,13 @@
             <form onsubmit="event.preventDefault(); sendData();">
                 <div class="control-section">
                     <h2 class="control-title">General Settings</h2>
-                    <div class="control-item">
+                    <div class="control-item" style="display: none;">
                         <label for="timeActivated">Time Activated:</label>
-                        <input type="checkbox" id="timeActivated">
+                        <input type="checkbox" id="timeActivated" checked>
                     </div>
                     <div class="control-item">
-                        <label for="gameTime">Game Time:</label>
-                        <input type="text" id="gameTime" value="00:00" class="control-input">
+                        <label for="gameTime">Middle Text:</label>
+                        <input type="text" id="gameTime" value="@" class="control-input">
                     </div>
                 </div>
                 <div class="control-teams">

@@ -25,8 +25,8 @@ app.mount("/static", StaticFiles(directory=static_path), name="static")
 # Default state
 DEFAULT_STATE = {
     "time": {
-        "activated": False,
-        "gameTime": "00:00"
+        "activated": True,
+        "gameTime": "@"
     },
     "home": {
         "name": "Home",
