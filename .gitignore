@@ -48,3 +48,4 @@ package-lock.json
 htmlcov/
 .pytest_cache/ 
 static/global_rendered.css
+scorebug_presets.json
