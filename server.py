@@ -75,11 +75,13 @@ class ConnectionManager:
             self.overlay_clients.remove(websocket)
 
     async def broadcast_to_overlays(self, message: str):
+        print(f"Broadcasting message to overlays: {message}")  # Debug print
         for client in self.overlay_clients:
             try:
                 await client.send_text(message)
-            except:
-                # Remove failed clients
+                print(f"Message sent to overlay client: {client}")  # Debug print
+            except Exception as e:
+                print(f"Failed to send message to overlay client: {e}")  # Debug print
                 self.overlay_clients.remove(client)
 
 manager = ConnectionManager()
@@ -121,9 +123,11 @@ async def websocket_endpoint(
     client_type: str = Query("overlay")
 ):
     await manager.connect(websocket, client_type)
+    print(f"New {client_type} client connected")  # Debug print
     try:
         while True:
             data = await websocket.receive_text()
+            print(f"Received data from {client_type} client: {data}")  # Debug print
             try:
                 message = json.loads(data)
                 command = message.get("command")
@@ -194,7 +198,7 @@ async def websocket_endpoint(
                     }))
     except WebSocketDisconnect:
         manager.disconnect(websocket, client_type)
-        print(f"WebSocket connection closed for {client_type}")
+        print(f"WebSocket connection closed for {client_type}")  # Debug print
 
 #if __name__ == "__main__":
 #    # Run the server

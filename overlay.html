@@ -12,8 +12,7 @@
         let socket;
 
         function openWebSocket() {
-            const server = window.location.host;
-            const socket = new WebSocket(`ws://${server}/ws?client_type=control`);
+            const socket = new WebSocket(`ws://localhost:8000/ws?client_type=overlay`);
 
             socket.onopen = function (event) {
                 console.log("WebSocket is open now.");
