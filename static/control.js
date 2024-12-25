@@ -51,45 +51,100 @@ function handleNonStateInfo(data) {
 }
 
 function updatePage(data) {
-    const elements = {
-        gameTime: 'gameTime',
-        homeName: 'homeName',
-        homeSubtext: 'homeSubtext',
-        homeScore: 'homeScore',
-        homeColor: 'homeColor',
-        awayName: 'awayName',
-        awaySubtext: 'awaySubtext',
-        awayScore: 'awayScore',
-        awayColor: 'awayColor',
-        homeBorder: 'homeBorder',
-        awayBorder: 'awayBorder'
+    const mappings = {
+        'gameTime': 'time.gameTime',
+        'homeName': 'home.name',
+        'homeSubtext': 'home.subtext',
+        'homeScore': 'home.score',
+        'homeColor': 'home.color',
+        'awayName': 'away.name',
+        'awaySubtext': 'away.subtext',
+        'awayScore': 'away.score',
+        'awayColor': 'away.color'
     };
 
-    Object.keys(elements).forEach(key => {
-        const element = document.getElementById(elements[key]);
-        if (element) {
-            element.value = data[key] || element.value;
-            if (key.includes('Color')) {
-                element.style.borderColor = data[key];
+    for (const [id, path] of Object.entries(mappings)) {
+        const value = path.split('.').reduce((obj, key) => obj && obj[key], data);
+        if (value !== undefined) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.value = value;
             }
         }
-    });
+    }
 
-    updateTeamColors(data.home.color, data.away.color);
-    updateScoreHeaders(data);
-}
+    // Update border colors
+    const homeColor = data.home.color;
+    const awayColor = data.away.color;
+    document.getElementById('homeBorder').style.borderColor = homeColor;
+    document.getElementById('awayBorder').style.borderColor = awayColor;
 
-function updateScoreHeaders(data) {
-    document.querySelector('.quick-actions-group.scoreHome h3').textContent = `Home Score (${data.home.name} ${data.home.subtext})`;
-    document.querySelector('.quick-actions-group.scoreAway h3').textContent = `Away Score (${data.away.name} ${data.away.subtext})`;
+    // Call additional functions
+    updateTeamColors(homeColor, awayColor);
+
+    // Update quick action headers
+    const homeHeader = document.querySelector('.quick-actions-group.scoreHome h3');
+    const awayHeader = document.querySelector('.quick-actions-group.scoreAway h3');
+    if (homeHeader) {
+        homeHeader.textContent = `Home Score (${data.home.name} ${data.home.subtext})`;
+    }
+    if (awayHeader) {
+        awayHeader.textContent = `Away Score (${data.away.name} ${data.away.subtext})`;
+    }
 }
 
 async function sendData() {
-    const data = await gatherData();
-    if (data) {
-        updateTeamColors(data.home.color, data.away.color);
-        socket.send(JSON.stringify(data));
+    const currentState = await fetchEndpoint('/state');
+    if (!currentState) return;
+
+    // Check for changes in game time
+    const newGameTime = document.getElementById('gameTime').value;
+    if (newGameTime !== currentState.time.gameTime) {
+        // TODO: Add endpoint for game time updates
+        currentState.time.gameTime = newGameTime;
     }
+
+    // Check for changes in home team
+    const homeChanges = await checkTeamChanges('home', currentState.home);
+    const awayChanges = await checkTeamChanges('away', currentState.away);
+
+    // Update the UI with the latest state
+    updatePage(currentState);
+}
+
+async function checkTeamChanges(team, currentTeamState) {
+    const nameElem = document.getElementById(`${team}Name`);
+    const subtextElem = document.getElementById(`${team}Subtext`);
+    const scoreElem = document.getElementById(`${team}Score`);
+    const colorElem = document.getElementById(`${team}Color`);
+
+    // Check and update name if changed
+    if (nameElem.value !== currentTeamState.name) {
+        await updateTeamName(team);
+    }
+
+    // Check and update subtext if changed
+    if (subtextElem.value !== currentTeamState.subtext) {
+        await updateTeamSubtext(team);
+    }
+
+    // Check and update score if changed
+    const newScore = parseInt(scoreElem.value);
+    if (newScore !== currentTeamState.score) {
+        const scoreDiff = newScore - currentTeamState.score;
+        await updateScore(team, scoreDiff);
+    }
+
+    // Check and update color if changed
+    if (colorElem.value !== currentTeamState.color) {
+        await updateTeamColor(team);
+    }
+}
+
+// Add new function for subtext updates
+async function updateTeamSubtext(team) {
+    const newSubtext = document.getElementById(`${team}Subtext`).value;
+    await fetchEndpoint(`/${team}/subtext?change=true&subtext=${encodeURIComponent(newSubtext)}`);
 }
 
 async function gatherData() {
@@ -107,7 +162,7 @@ async function gatherData() {
 }
 
 function resetData() {
-    socket.send(JSON.stringify({ command: "reset" }));
+    fetchEndpoint('/reset')
 }
 
 function sendBannerData() {
