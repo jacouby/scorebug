@@ -35,7 +35,7 @@
                             <span class="team-title">Away Team</span>
                             <div class="control-item">
                                 <label for="awayName">Name:</label>
-                                <input type="text" id="awayName" value="Away Team" class="control-input">
+                                <input type="text" id="awayName" value="Away Team" class="control-input" onchange="updateTeamName('away')">
                             </div>
                             <div class="control-item">
                                 <label for="awaySubtext">Subtext:</label>
@@ -47,7 +47,7 @@
                             </div>
                             <div class="control-item">
                                 <label for="awayColor">Color:</label>
-                                <input type="color" id="awayColor" value="#ff0000" class="color-input">
+                                <input type="color" id="awayColor" value="#ff0000" class="color-input" onchange="updateTeamColor('away')">
                             </div>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                             <span class="team-title">Home Team</span>
                             <div class="control-item">
                                 <label for="homeName">Name:</label>
-                                <input type="text" id="homeName" value="Home Team" class="control-input">
+                                <input type="text" id="homeName" value="Home Team" class="control-input" onchange="updateTeamName('home')">
                             </div>
                             <div class="control-item">
                                 <label for="homeSubtext">Subtext:</label>
@@ -68,7 +68,7 @@
                             </div>
                             <div class="control-item">
                                 <label for="homeColor">Color:</label>
-                                <input type="color" id="homeColor" value="#1303c8" class="color-input">
+                                <input type="color" id="homeColor" value="#1303c8" class="color-input" onchange="updateTeamColor('home')">
                             </div>
                         </div>
                     </div>

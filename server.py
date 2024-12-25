@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException, Response
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 import json
@@ -199,6 +199,42 @@ async def websocket_endpoint(
     except WebSocketDisconnect:
         manager.disconnect(websocket, client_type)
         print(f"WebSocket connection closed for {client_type}")  # Debug print
+
+# Add these new endpoints after the existing routes
+@app.get("/{team}/score")
+async def update_score(team: str, value: int):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    current_state[team]["score"] = max(0, current_state[team]["score"] + value)
+    await manager.broadcast_to_overlays(json.dumps(current_state))
+    return {"score": current_state[team]["score"]}
+
+@app.get("/{team}/name")
+async def team_name(team: str, change: bool = False, name: Optional[str] = None):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    if change and name is not None:
+        current_state[team]["name"] = name
+        await manager.broadcast_to_overlays(json.dumps(current_state))
+        
+    return {"name": current_state[team]["name"]}
+
+@app.get("/{team}/color")
+async def team_color(team: str, change: bool = False, hex: Optional[str] = None):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    if change and hex is not None:
+        current_state[team]["color"] = hex
+        await manager.broadcast_to_overlays(json.dumps(current_state))
+        
+    return {"color": current_state[team]["color"]}
+
+@app.get("/state")
+async def get_state():
+    return current_state
 
 #if __name__ == "__main__":
 #    # Run the server

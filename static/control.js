@@ -8,6 +8,17 @@ socket.onmessage = handleSocketMessage;
 let activePopup = null;
 let presets = [];
 
+async function fetchEndpoint(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Network response was not ok');
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     updatePresetButtons();
     updateScoreButtons();
@@ -73,30 +84,25 @@ function updateScoreHeaders(data) {
     document.querySelector('.quick-actions-group.scoreAway h3').textContent = `Away Score (${data.away.name} ${data.away.subtext})`;
 }
 
-function sendData() {
-    const data = gatherData();
-    updateTeamColors(data.home.color, data.away.color);
-    socket.send(JSON.stringify(data));
+async function sendData() {
+    const data = await gatherData();
+    if (data) {
+        updateTeamColors(data.home.color, data.away.color);
+        socket.send(JSON.stringify(data));
+    }
 }
 
-function gatherData() {
+async function gatherData() {
+    const state = await fetchEndpoint('/state');
+    if (!state) return null;
+    
     return {
         time: {
             activated: true,
             gameTime: document.getElementById('gameTime').value
         },
-        home: {
-            name: document.getElementById('homeName').value,
-            subtext: document.getElementById('homeSubtext').value,
-            score: parseInt(document.getElementById('homeScore').value, 10),
-            color: document.getElementById('homeColor').value
-        },
-        away: {
-            name: document.getElementById('awayName').value,
-            subtext: document.getElementById('awaySubtext').value,
-            score: parseInt(document.getElementById('awayScore').value, 10),
-            color: document.getElementById('awayColor').value
-        }
+        home: state.home,
+        away: state.away
     };
 }
 
@@ -370,12 +376,11 @@ function updateButtons(scoreContainer, flagContainer, buttons, team) {
     `).join('');
 }
 
-function updateScore(team, value) {
-    const scoreElement = document.getElementById(`${team}Score`);
-    let currentScore = parseInt(scoreElement.value, 10);
-    currentScore = Math.max(0, currentScore + value);
-    scoreElement.value = currentScore;
-    sendData();
+async function updateScore(team, value) {
+    const response = await fetchEndpoint(`/${team}/score?value=${value}`);
+    if (response) {
+        document.getElementById(`${team}Score`).value = response.score;
+    }
 }
 
 function sendScoreBanner(team, points) {
@@ -434,4 +439,14 @@ function sendQuickPopup(team, flagType) {
     activePopup = popupData;
     updateActivePopupsList();
     socket.send(JSON.stringify(popupData));
-} 
+}
+
+async function updateTeamName(team) {
+    const newName = document.getElementById(`${team}Name`).value;
+    await fetchEndpoint(`/${team}/name?change=true&name=${encodeURIComponent(newName)}`);
+}
+
+async function updateTeamColor(team) {
+    const newColor = document.getElementById(`${team}Color`).value;
+    await fetchEndpoint(`/${team}/color?change=true&hex=${encodeURIComponent(newColor)}`);
+}
