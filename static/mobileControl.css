@@ -1,0 +1,67 @@
+body {
+     background-color: #374151;
+     display: flex;
+}
+
+.inner {
+     background-color: rgb(100 116 139);
+     margin: auto;
+     min-width: 92vw;
+     min-height: 92vh;
+     margin-top: 4vh;
+     border-radius: .75rem;
+}
+
+.inner div {
+     
+}
+
+.options {
+     background-color: rgb(203 213 225);
+     border-radius: .75rem;
+     padding: .5rem;
+     margin: 1rem .5rem 0 0.5rem;
+     display: flex;
+}   
+
+.options select {
+
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .25rem;
+}
+
+.buttons .home, .buttons .away  {
+     background-color: rgb(203 213 225);
+     border-radius: .75rem;
+     padding: .5rem;
+     margin: 1rem .5rem 0 0.5rem;
+     display: block;
+}
+
+.buttons button {
+     width: 100%;
+     padding: 1rem  1.5rem 1rem 1.5rem;
+     background-color: aqua;
+     margin: .5rem auto;
+     border-radius: 1rem;
+}
+
+.buttons .home {
+
+}
+
+.score-button-group {
+     display: grid;
+}
+
+.text {
+     display: flex;
+}
+
+.text span {
+     margin: .1rem;
+}

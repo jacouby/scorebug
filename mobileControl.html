@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Control Page</title>
+	<link rel="stylesheet" href="/static/mobileControl.css">
+	<link rel="stylesheet" href="/static/global.css">
+	<script src="/static/control.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			document.getElementById('sportType').value = 'default';
+			updateScoreButtons();
+		});
+	</script>
+</head>
+
+<body>
+	<div class="inner">
+		<div class="options">
+			<select id="sportType" onchange="updateScoreButtons()">
+				<option value="default">General</option>
+				<option value="basketball">Basketball</option>
+				<option value="football">Football</option>
+			</select>
+		</div>
+		<div class="buttons">
+			<div class="home">
+				<div class="text">
+					<span>Home</span>
+					<span>Team</span>
+				</div>
+				<div class="score-button-grid" id="homeScoreButtons">
+					<!-- Score buttons will be added dynamically -->
+				</div>
+				<div class="quickPopup home">
+					<!-- Flag buttons will be added dynamically -->
+				</div>
+			</div>
+			<div class="away">
+				<div class="text">
+					<span>Away</span>
+					<span>Team</span>
+				</div>
+				<div class="score-button-grid" id="awayScoreButtons">
+					<!-- Score buttons will be added dynamically -->
+				</div>
+				<div class="quickPopup away">
+					<!-- Flag buttons will be added dynamically -->
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

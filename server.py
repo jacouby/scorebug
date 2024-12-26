@@ -22,7 +22,7 @@ static_path = get_resource_path('static')
 print(f"Mounting static files from: {static_path}")  # Debug print
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
-# Default state
+# Default state 
 DEFAULT_STATE = {
     "time": {
         "activated": True,
@@ -114,6 +114,11 @@ async def get_overlay():
 @app.get("/control")
 async def get_control():
     html_content = read_html("control.html")
+    return HTMLResponse(content=html_content, media_type="text/html")
+
+@app.get("/mobileControl")
+async def get_control():
+    html_content = read_html("mobileControl.html")
     return HTMLResponse(content=html_content, media_type="text/html")
 
 # WebSocket endpoint
@@ -231,6 +236,17 @@ async def team_color(team: str, change: bool = False, hex: Optional[str] = None)
         await manager.broadcast_to_overlays(json.dumps(current_state))
         
     return {"color": current_state[team]["color"]}
+
+@app.get("/{team}/subtext")
+async def team_subtext(team: str, change: bool = False, subtext: Optional[str] = None):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    if change and subtext is not None:
+        current_state[team]["subtext"] = subtext
+        await manager.broadcast_to_overlays(json.dumps(current_state))
+        
+    return {"subtext": current_state[team]["subtext"]}
 
 @app.get("/state")
 async def get_state():
