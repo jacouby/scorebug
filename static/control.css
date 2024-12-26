@@ -232,6 +232,17 @@
     flex-wrap: wrap;
 }
 
+.presetButtons {
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+}
+
+.presetButtons button {
+    width: 100%;
+}
+
 .sport-selector {
     margin-bottom: 1rem;
     padding: 0.5rem;
