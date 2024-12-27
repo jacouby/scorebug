@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException, Response
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 import json
@@ -22,7 +22,7 @@ static_path = get_resource_path('static')
 print(f"Mounting static files from: {static_path}")  # Debug print
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
-# Default state
+# Default state 
 DEFAULT_STATE = {
     "time": {
         "activated": True,
@@ -54,33 +54,24 @@ current_state = DEFAULT_STATE.copy()
 # Store connected clients
 class ConnectionManager:
     def __init__(self):
-        self.overlay_clients: List[WebSocket] = []
-        self.control_clients: List[WebSocket] = []
+        self.clientList: List[WebSocket] = []
 
     async def connect(self, websocket: WebSocket, client_type: str):
         await websocket.accept()
-        if client_type == "control":
-            self.control_clients.append(websocket)
-            # Send current state to new control client
-            await websocket.send_text(json.dumps(current_state))
-        else:
-            self.overlay_clients.append(websocket)
-            # Send current state to new overlay client
-            await websocket.send_text(json.dumps(current_state))
+        self.clientList.append(websocket)
+        # Send current state to new overlay client
+        await websocket.send_text(json.dumps(current_state))
 
     def disconnect(self, websocket: WebSocket, client_type: str):
-        if client_type == "control":
-            self.control_clients.remove(websocket)
-        else:
-            self.overlay_clients.remove(websocket)
+        self.clientList.remove(websocket)
 
-    async def broadcast_to_overlays(self, message: str):
-        for client in self.overlay_clients:
+    async def broadcastToClients(self, message: str):
+        print(f"Broadcasting message to clients: {message}")
+        for client in self.clientList:
             try:
                 await client.send_text(message)
-            except:
-                # Remove failed clients
-                self.overlay_clients.remove(client)
+            except Exception as e:
+                self.clientList.remove(client)
 
 manager = ConnectionManager()
 
@@ -114,6 +105,11 @@ async def get_control():
     html_content = read_html("control.html")
     return HTMLResponse(content=html_content, media_type="text/html")
 
+@app.get("/mobileControl")
+async def get_control():
+    html_content = read_html("mobileControl.html")
+    return HTMLResponse(content=html_content, media_type="text/html")
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(
@@ -121,9 +117,11 @@ async def websocket_endpoint(
     client_type: str = Query("overlay")
 ):
     await manager.connect(websocket, client_type)
+    print(f"New {client_type} client connected")  # Debug print
     try:
         while True:
             data = await websocket.receive_text()
+            print(f"Received data from {client_type} client: {data}")  # Debug print
             try:
                 message = json.loads(data)
                 command = message.get("command")
@@ -134,11 +132,11 @@ async def websocket_endpoint(
                     popup_manager.active_popup = None
                     if client_type == "control":
                         await websocket.send_text(json.dumps(current_state))
-                        await manager.broadcast_to_overlays(json.dumps(current_state))
+                        await manager.broadcastToClients(json.dumps(current_state))
                 
                 elif command in ["banner", "persistent_banner"]:
                     if client_type == "control":
-                        await manager.broadcast_to_overlays(json.dumps(message))
+                        await manager.broadcastToClients(json.dumps(message))
                 
                 elif command in ["popup", "persistent_popup"]:
                     if client_type == "control":
@@ -151,7 +149,7 @@ async def websocket_endpoint(
                                 "popup_data": message
                             }))
                             # Broadcast to overlay clients
-                            await manager.broadcast_to_overlays(json.dumps(message))
+                            await manager.broadcastToClients(json.dumps(message))
                         else:
                             # Send error to control client
                             await websocket.send_text(json.dumps({
@@ -168,16 +166,16 @@ async def websocket_endpoint(
                             "message": "Popup removed"
                         }))
                         # Broadcast to overlay clients
-                        await manager.broadcast_to_overlays(json.dumps(message))
+                        await manager.broadcastToClients(json.dumps(message))
                 
                 elif command == "remove_banner":
                     if client_type == "control":
-                        await manager.broadcast_to_overlays(json.dumps(message))
+                        await manager.broadcastToClients(json.dumps(message))
                 
                 elif all(key in message for key in ["time", "home", "away"]):
                     if client_type == "control":
                         current_state = message
-                        await manager.broadcast_to_overlays(json.dumps(message))
+                        await manager.broadcastToClients(json.dumps(message))
                 
                 else:
                     if client_type == "control":
@@ -194,7 +192,54 @@ async def websocket_endpoint(
                     }))
     except WebSocketDisconnect:
         manager.disconnect(websocket, client_type)
-        print(f"WebSocket connection closed for {client_type}")
+        print(f"WebSocket connection closed for {client_type}")  # Debug print
+
+# Add these new endpoints after the existing routes
+@app.get("/{team}/score")
+async def update_score(team: str, value: int):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    current_state[team]["score"] = max(0, current_state[team]["score"] + value)
+    await manager.broadcastToClients(json.dumps(current_state))
+    return {"score": current_state[team]["score"]}
+
+@app.get("/{team}/name")
+async def team_name(team: str, change: bool = False, name: Optional[str] = None):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    if change and name is not None:
+        current_state[team]["name"] = name
+        await manager.broadcastToClients(json.dumps(current_state))
+        
+    return {"name": current_state[team]["name"]}
+
+@app.get("/{team}/color")
+async def team_color(team: str, change: bool = False, hex: Optional[str] = None):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    if change and hex is not None:
+        current_state[team]["color"] = hex
+        await manager.broadcastToClients(json.dumps(current_state))
+        
+    return {"color": current_state[team]["color"]}
+
+@app.get("/{team}/subtext")
+async def team_subtext(team: str, change: bool = False, subtext: Optional[str] = None):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    if change and subtext is not None:
+        current_state[team]["subtext"] = subtext
+        await manager.broadcastToClients(json.dumps(current_state))
+        
+    return {"subtext": current_state[team]["subtext"]}
+
+@app.get("/state")
+async def get_state():
+    return current_state
 
 #if __name__ == "__main__":
 #    # Run the server

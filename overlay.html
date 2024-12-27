@@ -9,10 +9,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
+        const server = window.location.host;
         let socket;
 
         function openWebSocket() {
-            socket = new WebSocket("ws://localhost:8000/ws?client_type=overlay");
+            const socket = new WebSocket(`ws://${server}/ws?client_type=overlay`);
 
             socket.onopen = function (event) {
                 console.log("WebSocket is open now.");
