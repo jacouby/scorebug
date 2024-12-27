@@ -7,6 +7,7 @@ socket.onmessage = handleSocketMessage;
 
 let activePopup = null;
 let presets = [];
+let page = '';
 
 async function fetchEndpoint(url) {
     try {
@@ -20,7 +21,20 @@ async function fetchEndpoint(url) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    updatePresetButtons();
+
+    if (document.querySelector('.control-body')) {
+        page = 'control'
+        Object.freeze(page)
+    } else {
+        page = 'mobileControl'
+        Object.freeze(page)
+    }
+    console.log(`Page type: ${page}`)
+
+    if (page == "control") {
+        updatePresetButtons();
+    }
+    
     updateScoreButtons();
 });
 
@@ -93,7 +107,7 @@ function updatePage(data) {
     }
 }
 
-async function sendData() {
+/*async function sendData() {
     const currentState = await fetchEndpoint('/state');
     if (!currentState) return;
 
@@ -104,13 +118,14 @@ async function sendData() {
         currentState.time.gameTime = newGameTime;
     }
 
-    // Check for changes in home team
-    const homeChanges = await checkTeamChanges('home', currentState.home);
-    const awayChanges = await checkTeamChanges('away', currentState.away);
-
+    // Check for changes in home team; Ignore if mobileControl
+    if (page == 'control') {
+        const homeChanges = await checkTeamChanges('home', currentState.home);
+        const awayChanges = await checkTeamChanges('away', currentState.away);
+    }
     // Update the UI with the latest state
     updatePage(currentState);
-}
+}*/
 
 async function checkTeamChanges(team, currentTeamState) {
     const nameElem = document.getElementById(`${team}Name`);
@@ -150,7 +165,7 @@ async function updateTeamSubtext(team) {
 async function gatherData() {
     const state = await fetchEndpoint('/state');
     if (!state) return null;
-    
+
     return {
         time: {
             activated: true,
@@ -434,7 +449,11 @@ function updateButtons(scoreContainer, flagContainer, buttons, team) {
 async function updateScore(team, value) {
     const response = await fetchEndpoint(`/${team}/score?value=${value}`);
     if (response) {
-        document.getElementById(`${team}Score`).value = response.score;
+        if (page == 'control') {
+            document.getElementById(`${team}Score`).value = response.score;
+        } else {
+            document.getElementById(`${team}Score`).textContent = response.score
+        }
     }
 }
 
