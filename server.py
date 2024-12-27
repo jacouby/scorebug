@@ -54,35 +54,26 @@ current_state = DEFAULT_STATE.copy()
 # Store connected clients
 class ConnectionManager:
     def __init__(self):
-        self.overlay_clients: List[WebSocket] = []
-        self.control_clients: List[WebSocket] = []
+        self.clientList: List[WebSocket] = []
 
     async def connect(self, websocket: WebSocket, client_type: str):
         await websocket.accept()
-        if client_type == "control":
-            self.control_clients.append(websocket)
-            # Send current state to new control client
-            await websocket.send_text(json.dumps(current_state))
-        else:
-            self.overlay_clients.append(websocket)
-            # Send current state to new overlay client
-            await websocket.send_text(json.dumps(current_state))
+        self.clientList.append(websocket)
+        # Send current state to new overlay client
+        await websocket.send_text(json.dumps(current_state))
 
     def disconnect(self, websocket: WebSocket, client_type: str):
-        if client_type == "control":
-            self.control_clients.remove(websocket)
-        else:
-            self.overlay_clients.remove(websocket)
+        self.clientList.remove(websocket)
 
     async def broadcast_to_overlays(self, message: str):
         print(f"Broadcasting message to overlays: {message}")  # Debug print
-        for client in self.overlay_clients:
+        for client in self.clientList:
             try:
                 await client.send_text(message)
                 print(f"Message sent to overlay client: {client}")  # Debug print
             except Exception as e:
                 print(f"Failed to send message to overlay client: {e}")  # Debug print
-                self.overlay_clients.remove(client)
+                self.clientList.remove(client)
 
 manager = ConnectionManager()
 
