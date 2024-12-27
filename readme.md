@@ -37,6 +37,21 @@ The server will be available at `http://localhost:8000`
 fastapi run
 ```
 
+
+## Accessing the service
+
+### GET /overlay
+Serves the overlay.html page
+
+### GET /control
+Serves the control.html page
+
+### GET /mobileControl
+Serves the mobileControl.html page (Stripped Down, Score Control only)
+
+### WS /ws
+Websocket Server, only sends out info
+
 ## - TODO
 
 - [ ] Custom Text in middle for current quater/down
