@@ -87,13 +87,9 @@ function updatePage(data) {
         }
     }
 
-    // Update border colors
+    // Update team colors
     const homeColor = data.home.color;
     const awayColor = data.away.color;
-    document.getElementById('homeBorder').style.borderColor = homeColor;
-    document.getElementById('awayBorder').style.borderColor = awayColor;
-
-    // Call additional functions
     updateTeamColors(homeColor, awayColor);
 
     // Update quick action headers

@@ -82,6 +82,15 @@
     padding: 1rem;
     background-color: #ffffff; /* bg-white */
     border-radius: 0.75rem;
+    border: 3px solid;
+}
+
+.away .team-border {
+    border-color: var(--away-color);
+}
+
+.home .team-border {
+    border-color: var(--home-color);
 }
 
 .team-title {
