@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (page == "control") {
         updatePresetButtons();
     }
-    
+
     updateScoreButtons();
 });
 
@@ -65,26 +65,40 @@ function handleNonStateInfo(data) {
 }
 
 function updatePage(data) {
-    const mappings = {
-        'gameTime': 'time.gameTime',
-        'homeName': 'home.name',
-        'homeSubtext': 'home.subtext',
-        'homeScore': 'home.score',
-        'homeColor': 'home.color',
-        'awayName': 'away.name',
-        'awaySubtext': 'away.subtext',
-        'awayScore': 'away.score',
-        'awayColor': 'away.color'
-    };
+    if (page == "control") {
+        const mappings = {
+            'gameTime': 'time.gameTime',
+            'homeName': 'home.name',
+            'homeSubtext': 'home.subtext',
+            'homeScore': 'home.score',
+            'homeColor': 'home.color',
+            'awayName': 'away.name',
+            'awaySubtext': 'away.subtext',
+            'awayScore': 'away.score',
+            'awayColor': 'away.color'
+        };
 
-    for (const [id, path] of Object.entries(mappings)) {
-        const value = path.split('.').reduce((obj, key) => obj && obj[key], data);
-        if (value !== undefined) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.value = value;
+        for (const [id, path] of Object.entries(mappings)) {
+            const value = path.split('.').reduce((obj, key) => obj && obj[key], data);
+            if (value !== undefined) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.value = value;
+                }
+            }
+
+            const homeHeader = document.querySelector('.quick-actions-group.scoreHome h3');
+            const awayHeader = document.querySelector('.quick-actions-group.scoreAway h3');
+            if (homeHeader) {
+                homeHeader.textContent = `Home Score (${data.home.name} ${data.home.subtext})`;
+            }
+            if (awayHeader) {
+                awayHeader.textContent = `Away Score (${data.away.name} ${data.away.subtext})`;
             }
         }
+    } else {
+        document.getElementById('homeScore').textContent = data.home.score
+        document.getElementById('awayScore').textContent = data.away.score
     }
 
     // Update team colors
@@ -93,17 +107,10 @@ function updatePage(data) {
     updateTeamColors(homeColor, awayColor);
 
     // Update quick action headers
-    const homeHeader = document.querySelector('.quick-actions-group.scoreHome h3');
-    const awayHeader = document.querySelector('.quick-actions-group.scoreAway h3');
-    if (homeHeader) {
-        homeHeader.textContent = `Home Score (${data.home.name} ${data.home.subtext})`;
-    }
-    if (awayHeader) {
-        awayHeader.textContent = `Away Score (${data.away.name} ${data.away.subtext})`;
-    }
+
 }
 
-/*async function sendData() {
+async function sendData() {
     const currentState = await fetchEndpoint('/state');
     if (!currentState) return;
 
@@ -121,7 +128,7 @@ function updatePage(data) {
     }
     // Update the UI with the latest state
     updatePage(currentState);
-}*/
+}
 
 async function checkTeamChanges(team, currentTeamState) {
     const nameElem = document.getElementById(`${team}Name`);

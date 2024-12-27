@@ -65,14 +65,12 @@ class ConnectionManager:
     def disconnect(self, websocket: WebSocket, client_type: str):
         self.clientList.remove(websocket)
 
-    async def broadcast_to_overlays(self, message: str):
-        print(f"Broadcasting message to overlays: {message}")  # Debug print
+    async def broadcastToClients(self, message: str):
+        print(f"Broadcasting message to clients: {message}")
         for client in self.clientList:
             try:
                 await client.send_text(message)
-                print(f"Message sent to overlay client: {client}")  # Debug print
             except Exception as e:
-                print(f"Failed to send message to overlay client: {e}")  # Debug print
                 self.clientList.remove(client)
 
 manager = ConnectionManager()
@@ -134,11 +132,11 @@ async def websocket_endpoint(
                     popup_manager.active_popup = None
                     if client_type == "control":
                         await websocket.send_text(json.dumps(current_state))
-                        await manager.broadcast_to_overlays(json.dumps(current_state))
+                        await manager.broadcastToClients(json.dumps(current_state))
                 
                 elif command in ["banner", "persistent_banner"]:
                     if client_type == "control":
-                        await manager.broadcast_to_overlays(json.dumps(message))
+                        await manager.broadcastToClients(json.dumps(message))
                 
                 elif command in ["popup", "persistent_popup"]:
                     if client_type == "control":
@@ -151,7 +149,7 @@ async def websocket_endpoint(
                                 "popup_data": message
                             }))
                             # Broadcast to overlay clients
-                            await manager.broadcast_to_overlays(json.dumps(message))
+                            await manager.broadcastToClients(json.dumps(message))
                         else:
                             # Send error to control client
                             await websocket.send_text(json.dumps({
@@ -168,16 +166,16 @@ async def websocket_endpoint(
                             "message": "Popup removed"
                         }))
                         # Broadcast to overlay clients
-                        await manager.broadcast_to_overlays(json.dumps(message))
+                        await manager.broadcastToClients(json.dumps(message))
                 
                 elif command == "remove_banner":
                     if client_type == "control":
-                        await manager.broadcast_to_overlays(json.dumps(message))
+                        await manager.broadcastToClients(json.dumps(message))
                 
                 elif all(key in message for key in ["time", "home", "away"]):
                     if client_type == "control":
                         current_state = message
-                        await manager.broadcast_to_overlays(json.dumps(message))
+                        await manager.broadcastToClients(json.dumps(message))
                 
                 else:
                     if client_type == "control":
@@ -203,7 +201,7 @@ async def update_score(team: str, value: int):
         raise HTTPException(status_code=400, detail="Invalid team specified")
     
     current_state[team]["score"] = max(0, current_state[team]["score"] + value)
-    await manager.broadcast_to_overlays(json.dumps(current_state))
+    await manager.broadcastToClients(json.dumps(current_state))
     return {"score": current_state[team]["score"]}
 
 @app.get("/{team}/name")
@@ -213,7 +211,7 @@ async def team_name(team: str, change: bool = False, name: Optional[str] = None)
     
     if change and name is not None:
         current_state[team]["name"] = name
-        await manager.broadcast_to_overlays(json.dumps(current_state))
+        await manager.broadcastToClients(json.dumps(current_state))
         
     return {"name": current_state[team]["name"]}
 
@@ -224,7 +222,7 @@ async def team_color(team: str, change: bool = False, hex: Optional[str] = None)
     
     if change and hex is not None:
         current_state[team]["color"] = hex
-        await manager.broadcast_to_overlays(json.dumps(current_state))
+        await manager.broadcastToClients(json.dumps(current_state))
         
     return {"color": current_state[team]["color"]}
 
@@ -235,7 +233,7 @@ async def team_subtext(team: str, change: bool = False, subtext: Optional[str] =
     
     if change and subtext is not None:
         current_state[team]["subtext"] = subtext
-        await manager.broadcast_to_overlays(json.dumps(current_state))
+        await manager.broadcastToClients(json.dumps(current_state))
         
     return {"subtext": current_state[team]["subtext"]}
 
