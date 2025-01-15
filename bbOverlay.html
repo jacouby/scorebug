@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <title>Overlay</title>
+    <link rel="stylesheet" href="/static/bboverlay.css">
+    <link rel="stylesheet" href="/static/global.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/static/overlay.js"></script>
+</head>
+
+<body class="overlay-body">
+    <div class="bannerContainer" id="banner" style="display: none;">
+        <span id="bannerText" class="bannerText"></span>
+    </div>
+    <div class="overlay-container">
+        <div class="scoreContainer">
+            <div class="awayTeam">
+                <div class="nameAway">
+                    <span class="teamName">Away</span>
+                    <span class="teamSubtext">Team</span>
+                </div>
+                <span class="scoreAway">0</span>
+            </div>
+            <div class="gameTime">00:00</div>
+            <div class="homeTeam">
+                <span class="scoreHome">0</span>
+                <div class="nameHome">
+                    <span class="teamName">Home</span>
+                    <span class="teamSubtext">Team</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="popupContainer" id="popup">
+        <span id="popupText" class="popupText"></span>
+    </div>
+</body>
+
+</html>
