@@ -8,6 +8,8 @@ import sys
 
 app = FastAPI()
 
+ENABLE_CONTROLS = True  # Set to False to disable control endpoints
+
 def get_resource_path(relative_path):
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -99,14 +101,23 @@ async def get_overlay():
     html_content = read_html("overlay.html")
     return HTMLResponse(content=html_content, media_type="text/html")
 
+@app.get("/bboverlay")
+async def get_control():
+    html_content = read_html("bbOverlay.html")
+    return HTMLResponse(content=html_content, media_type="text/html")
+
 # Serve the control.html file
 @app.get("/control")
 async def get_control():
+    if not ENABLE_CONTROLS:
+        raise HTTPException(status_code=403, detail="Control access is disabled")
     html_content = read_html("control.html")
     return HTMLResponse(content=html_content, media_type="text/html")
 
 @app.get("/mobileControl")
 async def get_control():
+    if not ENABLE_CONTROLS:
+        raise HTTPException(status_code=403, detail="Control access is disabled")
     html_content = read_html("mobileControl.html")
     return HTMLResponse(content=html_content, media_type="text/html")
 
@@ -116,6 +127,10 @@ async def websocket_endpoint(
     websocket: WebSocket,
     client_type: str = Query("overlay")
 ):
+    if not ENABLE_CONTROLS and client_type == "control":
+        await websocket.close(code=1008, reason="Control access is disabled")
+        return
+    
     await manager.connect(websocket, client_type)
     print(f"New {client_type} client connected")  # Debug print
     try:
@@ -237,9 +252,36 @@ async def team_subtext(team: str, change: bool = False, subtext: Optional[str] =
         
     return {"subtext": current_state[team]["subtext"]}
 
+@app.get("/{team}/shot_clock")
+async def update_shot_clock(team: str, value: int):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    current_state[team]["shot_clock"] = max(0, value)  # Update shot clock
+    await manager.broadcastToClients(json.dumps(current_state))
+    return {"shot_clock": current_state[team]["shot_clock"]}
+
+@app.get("/{team}/custom_text")
+async def update_custom_text(team: str, text: str):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    current_state[team]["custom_text"] = text  # Update custom text
+    await manager.broadcastToClients(json.dumps(current_state))
+    return {"custom_text": current_state[team]["custom_text"]}
+
 @app.get("/state")
 async def get_state():
-    return current_state
+    return {
+        "time": {
+            "activated": True,
+            "gameTime": current_state["time"]["gameTime"],
+            "shotClock": current_state["home"]["shot_clock"],  # Include shot clock
+            "customText": current_state["home"]["custom_text"]  # Include custom text
+        },
+        "home": current_state["home"],
+        "away": current_state["away"]
+    }
 
 #if __name__ == "__main__":
 #    # Run the server
