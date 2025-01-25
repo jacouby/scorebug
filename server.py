@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException, Response
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query, HTTPException, Response, Request
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 import json
@@ -34,13 +34,15 @@ DEFAULT_STATE = {
         "name": "Home",
         "subtext": "Team",
         "score": 0,
-        "color": "#1303c8"
+        "color": "#1303c8",
+        "logo": None
     },
     "away": {
         "name": "Away",
         "subtext": "Team",
         "score": 0,
-        "color": "#ff0000"
+        "color": "#ff0000",
+        "logo": None
     },
     "popup": {
         "active": False,
@@ -276,12 +278,27 @@ async def get_state():
         "time": {
             "activated": True,
             "gameTime": current_state["time"]["gameTime"],
-            "shotClock": current_state["home"]["shot_clock"],  # Include shot clock
-            "customText": current_state["home"]["custom_text"]  # Include custom text
+            #"shotClock": current_state["home"]["shot_clock"],  # Include shot clock
+            #"customText": current_state["home"]["custom_text"]  # Include custom text
         },
         "home": current_state["home"],
         "away": current_state["away"]
     }
+
+@app.post("/{team}/logo")
+async def team_logo(team: str, request: Request):
+    if team not in ["home", "away"]:
+        raise HTTPException(status_code=400, detail="Invalid team specified")
+    
+    data = await request.json()
+    logo = data.get("logo")
+    
+    if logo:
+        current_state[team]["logo"] = logo
+        await manager.broadcastToClients(json.dumps(current_state))
+        return {"message": "Logo updated successfully"}
+    else:
+        raise HTTPException(status_code=400, detail="Logo data is missing")
 
 #if __name__ == "__main__":
 #    # Run the server

@@ -49,6 +49,10 @@
                                 <label for="awayColor">Color:</label>
                                 <input type="color" id="awayColor" value="#ff0000" class="color-input" onchange="updateTeamColor('away')">
                             </div>
+                            <div class="control-item">
+                                <label for="awayLogo">Away Logo:</label>
+                                <input type="file" id="awayLogo" accept="image/*" class="control-input" onchange="uploadTeamLogo('away')">
+                            </div>
                         </div>
                     </div>
                     <div class="home">
@@ -69,6 +73,10 @@
                             <div class="control-item">
                                 <label for="homeColor">Color:</label>
                                 <input type="color" id="homeColor" value="#1303c8" class="color-input" onchange="updateTeamColor('home')">
+                            </div>
+                            <div class="control-item">
+                                <label for="homeLogo">Home Logo:</label>
+                                <input type="file" id="homeLogo" accept="image/*" class="control-input" onchange="uploadTeamLogo('home')">
                             </div>
                         </div>
                     </div>

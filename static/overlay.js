@@ -66,19 +66,27 @@ function updatePage(data) {
     } else {
         document.querySelector('.gameTime').textContent = '@';
     }
-    if (data.home) {
-        document.querySelector('.homeTeam .teamName').textContent = data.home.name;
-        document.querySelector('.homeTeam .teamSubtext').textContent = data.home.subtext;
-        document.querySelector('.scoreHome').textContent = data.home.score;
-        const homeTeam = document.querySelector('.homeTeam');
-        homeTeam.style.backgroundColor = data.home.color;
-    }
-    if (data.away) {
-        document.querySelector('.awayTeam .teamName').textContent = data.away.name;
-        document.querySelector('.awayTeam .teamSubtext').textContent = data.away.subtext;
-        document.querySelector('.scoreAway').textContent = data.away.score;
-        const awayTeam = document.querySelector('.awayTeam');
-        awayTeam.style.backgroundColor = data.away.color;
+    updateTeamSection(data.home, 'home');
+    updateTeamSection(data.away, 'away');
+}
+
+function updateTeamSection(teamData, team) {
+    const teamName = document.querySelector(`.${team}Team .teamName`);
+    const teamSubtext = document.querySelector(`.${team}Team .teamSubtext`);
+    const teamScore = document.querySelector(`.score${team.charAt(0).toUpperCase() + team.slice(1)}`);
+    const teamLogo = document.getElementById(`${team}Logo`);
+    
+    teamName.textContent = teamData.name;
+    teamSubtext.textContent = teamData.subtext;
+    teamScore.textContent = teamData.score;
+    const teamElement = document.querySelector(`.${team}Team`);
+    teamElement.style.backgroundColor = teamData.color;
+
+    if (teamData.logo) {
+        teamLogo.src = `data:image/png;base64,${teamData.logo}`;
+        teamLogo.style.display = 'block';
+    } else {
+        teamLogo.style.display = 'none';
     }
 }
 

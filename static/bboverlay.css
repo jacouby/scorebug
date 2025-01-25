@@ -44,3 +44,10 @@ span {
 .score {
     font-size: xx-large;
 }
+
+.teamLogo {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+}
