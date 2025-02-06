@@ -117,7 +117,8 @@ async function sendData() {
     // Check for changes in game time
     const newGameTime = document.getElementById('gameTime').value;
     if (newGameTime !== currentState.time.gameTime) {
-        // TODO: Add endpoint for game time updates
+        // Update game time via the endpoint
+        await fetchEndpoint(`/time/set?text=${encodeURIComponent(newGameTime)}`);
         currentState.time.gameTime = newGameTime;
     }
 
@@ -555,4 +556,10 @@ async function uploadTeamLogo(team) {
         }
     };
     reader.readAsDataURL(file);
+}
+
+function confirmReset() {
+    if (confirm("Are you sure you want to reset?")) {
+        resetData();
+    }
 }

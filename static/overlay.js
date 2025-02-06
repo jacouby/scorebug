@@ -61,11 +61,9 @@ socket.onclose = function (event) {
 function updatePage(data) {
     document.documentElement.style.setProperty('--home-color', data.home.color);
     document.documentElement.style.setProperty('--away-color', data.away.color);
-    if (data.time.activated) {
-        document.querySelector('.gameTime').textContent = data.time.gameTime;
-    } else {
-        document.querySelector('.gameTime').textContent = '@';
-    }
+    
+    document.querySelector('.gameTime').textContent = data.time.gameTime;
+
     updateTeamSection(data.home, 'home');
     updateTeamSection(data.away, 'away');
 }

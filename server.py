@@ -5,6 +5,7 @@ import json
 from typing import Dict, List, Optional
 import os
 import sys
+import copy  # Added for deep copying the default state
 
 app = FastAPI()
 
@@ -51,9 +52,8 @@ DEFAULT_STATE = {
         "timestamp": None
     }
 }
-
-# Store current state
-current_state = DEFAULT_STATE.copy()
+# Store current state using a deep copy to ensure nested dictionaries are reinitialized
+current_state = copy.deepcopy(DEFAULT_STATE)
 
 # Store connected clients
 class ConnectionManager:
@@ -145,7 +145,7 @@ async def websocket_endpoint(
                 
                 if command == "reset":
                     global current_state
-                    current_state = DEFAULT_STATE.copy()
+                    current_state = copy.deepcopy(DEFAULT_STATE)
                     popup_manager.active_popup = None
                     if client_type == "control":
                         await websocket.send_text(json.dumps(current_state))
@@ -209,7 +209,20 @@ async def websocket_endpoint(
                     }))
     except WebSocketDisconnect:
         manager.disconnect(websocket, client_type)
-        print(f"WebSocket connection closed for {client_type}")  # Debug print
+        print(f"{client_type} client disconnected")
+
+@app.get('/reset')
+async def reset_score():
+    global current_state
+    current_state = copy.deepcopy(DEFAULT_STATE)
+    await manager.broadcastToClients(json.dumps(current_state))
+
+@app.get("/time/set")
+async def update_score(text: str):
+    current_state['time']["gameTime"] = text
+    print(current_state)
+    await manager.broadcastToClients(json.dumps(current_state))
+    return {"gameTime": current_state['time']["gameTime"]}
 
 # Add these new endpoints after the existing routes
 @app.get("/{team}/score")
@@ -278,8 +291,6 @@ async def get_state():
         "time": {
             "activated": True,
             "gameTime": current_state["time"]["gameTime"],
-            #"shotClock": current_state["home"]["shot_clock"],  # Include shot clock
-            #"customText": current_state["home"]["custom_text"]  # Include custom text
         },
         "home": current_state["home"],
         "away": current_state["away"]
