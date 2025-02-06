@@ -49,3 +49,4 @@ htmlcov/
 .pytest_cache/ 
 static/global_rendered.css
 scorebug_presets.json
+parser.py
