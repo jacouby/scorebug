@@ -214,8 +214,10 @@
 }
 
 .teamLogo {
-    width: 2rem;
-    height: 2rem;
+    width: 3em;
+    height: 3rem;
     margin-right: 0.5rem;
     border-radius: 50%;
+    padding: 5px;
+    background-color: white;
 }
