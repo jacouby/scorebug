@@ -117,7 +117,8 @@ async function sendData() {
     // Check for changes in game time
     const newGameTime = document.getElementById('gameTime').value;
     if (newGameTime !== currentState.time.gameTime) {
-        // TODO: Add endpoint for game time updates
+        // Update game time via the endpoint
+        await fetchEndpoint(`/time/set?text=${encodeURIComponent(newGameTime)}`);
         currentState.time.gameTime = newGameTime;
     }
 
@@ -526,4 +527,39 @@ async function updateTeamName(team) {
 async function updateTeamColor(team) {
     const newColor = document.getElementById(`${team}Color`).value;
     await fetchEndpoint(`/${team}/color?change=true&hex=${encodeURIComponent(newColor)}`);
+}
+
+async function uploadTeamLogo(team) {
+    const fileInput = document.getElementById(`${team}Logo`);
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+        const base64Image = event.target.result.split(',')[1];
+        
+        // Use POST request to send the base64 image
+        try {
+            const response = await fetch(`/${team}/logo`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ logo: base64Image })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to upload logo');
+            }
+        } catch (error) {
+            console.error('Error uploading logo:', error);
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function confirmReset() {
+    if (confirm("Are you sure you want to reset?")) {
+        resetData();
+    }
 }

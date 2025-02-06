@@ -212,3 +212,12 @@
 .slide-down {
     animation: slideDown .5s forwards;
 }
+
+.teamLogo {
+    width: 3em;
+    height: 3rem;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+    padding: 5px;
+    background-color: white;
+}

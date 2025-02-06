@@ -1,0 +1,79 @@
+.overlayContainer {
+    min-width: 12rem;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    padding: .5rem;
+    border-radius: 1rem;
+
+    font-family: 'Poppins';
+    color: white;
+    font-weight: 600;
+}
+
+.timeBox {
+    width: 47.66%;
+    margin: auto;
+    text-align: center;
+    background-color: lightgrey;
+    border-radius: 1rem 1rem 0 0;
+}
+
+.gameTime {
+    color: black;
+}
+
+
+span {
+    display: block;
+    width: max-content;
+    margin: auto;
+}
+
+.scoreContainer {
+    display: flex;
+    border-radius: 1rem;
+}
+
+.awayTeam {
+    background-color: var(--away-color);
+    min-width: 8rem;
+    border-radius: .75rem 0 0 .75rem;
+}
+
+
+.homeTeam {
+    background-color: var(--home-color);
+    min-width: 8rem;
+    border-radius: 0 .75rem .75rem 0;
+}
+
+.upperSplit {
+    display: flex;
+    padding: .25rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.homeTeam .upperSplit {
+    margin-left: .5rem;
+}
+
+.awayTeam .upperSplit {
+    margin-right: .5rem;
+}
+
+.score {
+    font-size: 2.5rem;
+    height: 3rem;
+    position: relative;
+    top: -.5rem;
+}
+
+.teamLogo {
+    width: 3rem;
+    height: 3rem;
+    border-radius: .75rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
