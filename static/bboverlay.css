@@ -55,14 +55,6 @@ span {
     align-items: center;
 }
 
-.homeTeam .upperSplit {
-    margin-left: .5rem;
-}
-
-.awayTeam .upperSplit {
-    margin-right: .5rem;
-}
-
 .score {
     font-size: 2.5rem;
     height: 3rem;
@@ -74,6 +66,9 @@ span {
     width: 3rem;
     height: 3rem;
     border-radius: .75rem;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
+    margin: auto;
+}
+
+.name {
+    margin: auto;
 }
