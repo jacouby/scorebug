@@ -1,4 +1,4 @@
-# Medford Scorebug
+# Scorebug
 
 Simple localhosted web-based scorebug
 
@@ -11,8 +11,8 @@ Simple localhosted web-based scorebug
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/jacouby/Medford-Sports.git
-cd Medford-Sports
+git clone https://github.com/jacouby/scoreubg.git
+cd scorebug
 ```
 
 2. Create and activate a Python virtual environment:
@@ -40,21 +40,72 @@ fastapi run
 
 ## Accessing the service
 
-### GET /overlay
+### `GET /overlay`
 Serves the overlay.html page
 
-### GET /control
+### `GET /bboverlay`
+Serves the bboverlay.html page, Smaller version of the overlay.
+
+### `GET /control`
 Serves the control.html page
 
-### GET /mobileControl
+### `GET /mobileControl`
 Serves the mobileControl.html page (Stripped Down, Score Control only)
 
-### WS /ws
+## API
+
+***Any varibles below mentioned as {team} are expected to be either `home` or `away`***
+
+### `WS /ws`
 Websocket Server, only sends out info
 
-## - TODO
+### `GET /reset`
+Resets the current state to default
 
-- [ ] Custom Text in middle for current quater/down
-- [X] Timeout (Make banner stay until manual change)
-- [X] PopUps by Team
-- [x] Replace entire overlay with given text in specific color/text
+### `GET /state`
+Returns the current state
+
+### `GET /time/set`
+Sets middle text
+Query Params:
+- `text` (string)
+  - The text to set middle text to
+
+### `GET /{team}/name`
+Returns the given team's current set `name`.
+Query Params:
+- `change` (bool, optional)
+  - `false` (default) = ignores any other params
+  - `true` = allows change of set name
+- `name` (string, optional)
+  - The name to change to if `change` is set to `true`
+
+### `GET /{team}/subtext`
+Returns the given team's current set `subtext/subname`.
+Query Params:
+- `change` (bool, optional)
+  - `false` (default) = ignores any other params
+  - `true` = allows change of set name
+- `subtext` (string, optional)
+  - The subtext/subname to change to if `change` is set to `true`
+
+### `GET /{team}/color`
+Returns the given team's current set `color`.
+Query Params:
+- `change` (bool, optional)
+  - `false` (default) = ignores any other params
+  - `true` = allows change of set name
+- `hex` (string, optional)
+  - The hex code to set to if `change` is set to `true`
+
+### `GET /{team}/score`
+Returns or changes the given team's current set `score`.
+Query Params:
+- `value` (int, optional)
+  - The value to add to current score
+
+### `POST /{team}/logo`
+Returns or changes the given team's current set `logo`.
+Body Params
+- `logo`
+  - Base64 encoded image, square png expected
